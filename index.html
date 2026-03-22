@@ -478,9 +478,15 @@
       </div>
 
       <div class="form-group">
-        <label>수록곡 & 타임스탬프 (선택)</label>
-        <div class="hint">각 줄에 "시간 곡명" 형식으로 입력. 예: 00:00 만복의 근원 하나님</div>
-        <textarea id="p-timestamps" rows="6" placeholder="00:00 만복의 근원 하나님&#10;03:25 주 하나님 지으신 모든 세계&#10;07:40 내 주를 가까이 하게 함은"></textarea>
+        <label>수록곡 목록 *</label>
+        <div class="hint">각 줄에 한 곡씩 입력. "번호 제목 (영어제목)" 형식 권장. 설명과 제목에 포함되어 SEO에 큰 도움이 됩니다.</div>
+        <textarea id="p-songs" rows="6" placeholder="찬송가 1장 만복의 근원 하나님 (Praise God from Whom All Blessings Flow)&#10;찬송가 27장 주 하나님 지으신 모든 세계 (How Great Thou Art)&#10;찬송가 338장 내 주를 가까이 하게 함은 (Nearer My God to Thee)"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>타임스탬프 (선택)</label>
+        <div class="hint">영상 편집 후 실제 시간을 입력하세요. 비워두면 수록곡 목록만 설명에 포함됩니다.</div>
+        <textarea id="p-timestamps" rows="4" placeholder="00:00&#10;03:25&#10;07:40"></textarea>
       </div>
 
       <button class="btn-generate" onclick="generatePlaylist()">SEO 콘텐츠 생성</button>
@@ -950,12 +956,17 @@ function applyPlaylistAI() {
   }
 
   if (Array.isArray(data.songs)) {
-    const timestamps = data.songs.map(s => {
-      let line = `${s.time} 찬송가 ${s.number}장 ${s.title}`;
+    // 수록곡 목록 (번호 + 제목 + 영어)
+    const songList = data.songs.map(s => {
+      let line = `찬송가 ${s.number}장 ${s.title}`;
       if (s.english) line += ` (${s.english})`;
       return line;
     }).join('\n');
-    document.getElementById('p-timestamps').value = timestamps;
+    document.getElementById('p-songs').value = songList;
+
+    // 타임스탬프 (시간만)
+    const times = data.songs.map(s => s.time).join('\n');
+    document.getElementById('p-timestamps').value = times;
   }
   if (Array.isArray(data.seasons)) {
     document.querySelectorAll('input[name="p-season"]').forEach(cb => { cb.checked = false; });
@@ -1148,36 +1159,53 @@ function generatePlaylist() {
   const theme = document.getElementById('p-theme').value.trim();
   const duration = document.getElementById('p-duration').value;
   const usage = document.getElementById('p-usage').value;
+  const songs = document.getElementById('p-songs').value.trim();
   const timestamps = document.getElementById('p-timestamps').value.trim();
   const seasons = getSeasons('p-season');
 
   if (!theme) { alert('PLAYLIST 주제를 입력해주세요.'); return; }
 
-  // Title (- 사용, 곡명 나열)
+  // 수록곡 파싱
+  const songLines = songs ? songs.split('\n').map(l => l.trim()).filter(l => l.length > 0) : [];
+  // 타임스탬프 파싱
+  const timeLines = timestamps ? timestamps.split('\n').map(l => l.trim()).filter(l => l.length > 0) : [];
+
+  // 수록곡에서 간단한 곡명만 추출 (제목용)
+  const shortNames = songLines.map(line => {
+    // "찬송가 27장 주 하나님 지으신 모든 세계 (How Great Thou Art)" → "주 하나님 지으신 모든 세계"
+    let name = line.replace(/^찬송가\s*\d+장\s*/, '').replace(/\s*\(.*\)\s*$/, '').trim();
+    return name || line;
+  });
+
+  // === TITLE ===
   let title = `${theme} 모음 ${duration} - 중간광고없음 - ${usage}`;
-  // 타임스탬프에서 곡명 추출하여 제목에 일부 포함
-  if (timestamps) {
-    const songNames = timestamps.split('\n')
-      .map(line => line.replace(/^\d{1,2}:\d{2}(?::\d{2})?\s*/, '').trim())
-      .filter(n => n.length > 0);
-    if (songNames.length > 0) {
-      const preview = songNames.slice(0, 3).join(', ');
-      // 제목이 너무 길지 않으면 추가
-      if ((title + ' - ' + preview).length < 90) {
-        title += ` - ${preview}`;
-        if (songNames.length > 3) title += ' 외';
-      }
+  if (shortNames.length > 0) {
+    const preview = shortNames.slice(0, 3).join(', ');
+    if ((title + ' - ' + preview).length < 90) {
+      title += ` - ${preview}`;
+      if (shortNames.length > 3) title += ' 외';
     }
   }
 
   let shortsTitle = '';
 
-  // Description (첫 2줄 키워드 집중)
+  // === DESCRIPTION ===
   let desc = `${theme} ${duration} 모음 - 중간광고없음 - ALL THAT HYMN\n`;
   desc += `${usage}, 묵상, 기도, 예배 전 배경음악으로 들어보세요.\n`;
-  if (timestamps) {
-    desc += `\n[수록곡]\n${timestamps}\n`;
+
+  // 타임스탬프 + 수록곡 결합
+  if (songLines.length > 0) {
+    desc += `\n[수록곡]\n`;
+    songLines.forEach((song, i) => {
+      const time = timeLines[i] || '';
+      if (time) {
+        desc += `${time} ${song}\n`;
+      } else {
+        desc += `${song}\n`;
+      }
+    });
   }
+
   desc += `\n더 많은 찬송가 편곡 듣기:\n`;
   desc += `▶ 교회에서 자주 부르는 찬송가 모음: [PLAYLIST 링크]\n`;
   desc += `▶ 새벽기도 찬송가 PLAYLIST: [PLAYLIST 링크]\n`;
@@ -1186,7 +1214,7 @@ function generatePlaylist() {
   if (seasons.length > 0) descHash.push(`#${seasons[0]}`);
   desc += descHash.slice(0, 5).join(' ');
 
-  // Tags (5-8개)
+  // === TAGS (5-8개) ===
   let tagList = [
     '찬송가 모음', theme, '중간광고없음',
     '예배 음악', 'hymn playlist', 'worship music', 'ALL THAT HYMN',
