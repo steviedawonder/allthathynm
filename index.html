@@ -388,32 +388,39 @@
 
     <!-- AI 도우미: PLAYLIST -->
     <div class="card" style="border-left: 4px solid var(--accent);">
-      <div class="card-title" style="color: var(--accent);">AI 도우미 - PLAYLIST 자동 구성</div>
-      <div class="form-group">
-        <label>PLAYLIST 주제 *</label>
-        <input type="text" id="ai-p-theme" placeholder="예: 교회에서 자주 부르는 찬송가, 사순절 찬송가">
+      <div class="card-title" style="color: var(--accent);">AI 도우미 - 수록곡 영어 제목 자동 채우기</div>
+
+      <div class="info-box">
+        곡을 추가하고 → LLM 프롬프트 생성 → 응답 붙여넣기 → 적용하면 영어 제목이 자동으로 채워집니다.
       </div>
+
+      <!-- 곡 추가 UI -->
       <div class="form-row">
-        <div class="form-group">
-          <label>곡 수</label>
-          <select id="ai-p-count">
-            <option value="10">10곡</option>
-            <option value="15" selected>15곡</option>
-            <option value="20">20곡</option>
-            <option value="30">30곡</option>
-          </select>
+        <div class="form-group" style="flex: 0.3;">
+          <label>찬송가 번호</label>
+          <input type="number" id="ai-p-num" placeholder="338" min="1" max="645">
         </div>
-        <div class="form-group">
-          <label>총 재생 시간</label>
-          <select id="ai-p-duration">
-            <option value="30분">30분</option>
-            <option value="1시간" selected>1시간</option>
-            <option value="2시간">2시간</option>
-            <option value="3시간">3시간</option>
-          </select>
+        <div class="form-group" style="flex: 0.7;">
+          <label>곡 제목</label>
+          <input type="text" id="ai-p-title" placeholder="내 주를 가까이 하게 함은">
         </div>
       </div>
-      <button class="btn-generate" style="background: var(--accent2); margin-bottom: 16px;" onclick="generatePlaylistPrompt()">1단계: LLM 프롬프트 생성</button>
+      <button class="btn-generate" style="background: var(--accent2); margin-bottom: 16px; font-size: 14px; padding: 12px;" onclick="addPlaylistSong()">+ 곡 추가</button>
+
+      <div id="ai-p-song-list" style="margin-bottom: 16px;"></div>
+
+      <div class="form-group">
+        <label>총 재생 시간</label>
+        <select id="ai-p-duration">
+          <option value="30분">30분</option>
+          <option value="1시간" selected>1시간</option>
+          <option value="2시간">2시간</option>
+          <option value="3시간">3시간</option>
+        </select>
+      </div>
+
+      <button class="btn-generate" style="background: var(--primary); margin-bottom: 16px;" onclick="generatePlaylistPrompt()">LLM 프롬프트 생성</button>
+
       <div id="ai-p-prompt-area" style="display:none;">
         <div class="output-card accent" style="margin-bottom: 14px;">
           <div class="output-label">
@@ -423,10 +430,10 @@
           <div class="output-text" id="ai-p-prompt-text" style="max-height: 200px;"></div>
         </div>
         <div class="form-group">
-          <label>2단계: LLM 응답을 여기에 붙여넣기</label>
+          <label>LLM 응답을 여기에 붙여넣기</label>
           <textarea id="ai-p-response" rows="8" placeholder="LLM의 JSON 응답을 여기에 붙여넣으세요."></textarea>
         </div>
-        <button class="btn-generate" style="background: var(--success);" onclick="applyPlaylistAI()">3단계: 아래 폼에 자동 적용</button>
+        <button class="btn-generate" style="background: var(--success);" onclick="applyPlaylistAI()">아래 폼에 자동 적용</button>
         <div id="ai-p-error" style="display:none; color: var(--accent); font-size: 13px; margin-top: 10px; padding: 10px; background: #fef0f3; border-radius: 8px;"></div>
       </div>
     </div>
@@ -479,14 +486,8 @@
 
       <div class="form-group">
         <label>수록곡 목록 *</label>
-        <div class="hint">각 줄에 한 곡씩 입력. "번호 제목 (영어제목)" 형식 권장. 설명과 제목에 포함되어 SEO에 큰 도움이 됩니다.</div>
-        <textarea id="p-songs" rows="6" placeholder="찬송가 1장 만복의 근원 하나님 (Praise God from Whom All Blessings Flow)&#10;찬송가 27장 주 하나님 지으신 모든 세계 (How Great Thou Art)&#10;찬송가 338장 내 주를 가까이 하게 함은 (Nearer My God to Thee)"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>타임스탬프 (선택)</label>
-        <div class="hint">영상 편집 후 실제 시간을 입력하세요. 비워두면 수록곡 목록만 설명에 포함됩니다.</div>
-        <textarea id="p-timestamps" rows="4" placeholder="00:00&#10;03:25&#10;07:40"></textarea>
+        <div class="hint">AI 도우미에서 자동 생성되거나, 직접 입력하세요. 타임스탬프 - 곡명 (영어제목) 형식입니다.</div>
+        <textarea id="p-songs" rows="8" placeholder="00:00 찬송가 1장 만복의 근원 하나님 (Praise God from Whom All Blessings Flow)&#10;03:30 찬송가 27장 주 하나님 지으신 모든 세계 (How Great Thou Art)&#10;07:00 찬송가 338장 내 주를 가까이 하게 함은 (Nearer My God to Thee)"></textarea>
       </div>
 
       <button class="btn-generate" onclick="generatePlaylist()">SEO 콘텐츠 생성</button>
@@ -898,42 +899,69 @@ function applyGospelAI() {
 }
 
 // ===== AI Helper: PLAYLIST =====
-function generatePlaylistPrompt() {
-  const theme = document.getElementById('ai-p-theme').value.trim();
-  const count = document.getElementById('ai-p-count').value;
-  const duration = document.getElementById('ai-p-duration').value;
-  if (!theme) { alert('PLAYLIST 주제를 입력해주세요.'); return; }
+let playlistSongs = []; // [{number, title}]
 
-  const prompt = `"${theme}" 주제로 ${duration}짜리 찬송가 PLAYLIST를 구성해주세요. 한국 새찬송가(1-645장) 기준으로 ${count}곡을 선곡해주세요.
+function addPlaylistSong() {
+  const num = document.getElementById('ai-p-num').value.trim();
+  const title = document.getElementById('ai-p-title').value.trim();
+  if (!num || !title) { alert('찬송가 번호와 곡 제목을 입력해주세요.'); return; }
+
+  playlistSongs.push({ number: parseInt(num), title: title });
+  document.getElementById('ai-p-num').value = '';
+  document.getElementById('ai-p-title').value = '';
+  document.getElementById('ai-p-num').focus();
+  renderPlaylistSongs();
+}
+
+function removePlaylistSong(index) {
+  playlistSongs.splice(index, 1);
+  renderPlaylistSongs();
+}
+
+function renderPlaylistSongs() {
+  const container = document.getElementById('ai-p-song-list');
+  if (playlistSongs.length === 0) {
+    container.innerHTML = '<div style="color: var(--text-light); font-size: 13px; padding: 8px 0;">추가된 곡이 없습니다.</div>';
+    return;
+  }
+  let html = '';
+  playlistSongs.forEach((s, i) => {
+    html += `<div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; margin-bottom:4px; background:var(--bg); border-radius:8px; font-size:13px;">
+      <span><strong style="color:var(--accent2);">${i + 1}.</strong> 찬송가 ${s.number}장 ${s.title}</span>
+      <button onclick="removePlaylistSong(${i})" style="background:none; border:none; color:var(--accent); cursor:pointer; font-size:16px; padding:0 4px;">&times;</button>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function generatePlaylistPrompt() {
+  if (playlistSongs.length === 0) { alert('곡을 먼저 추가해주세요.'); return; }
+
+  const songList = playlistSongs.map((s, i) => `${i + 1}. 찬송가 ${s.number}장 "${s.title}"`).join('\n');
+
+  const prompt = `아래 한국 새찬송가 곡들의 영어 원제목을 알려주세요.
+
+${songList}
 
 반드시 아래 JSON 형식만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.
 
 {
   "songs": [
-    {"time": "00:00", "number": 27, "title": "주 하나님 지으신 모든 세계", "english": "How Great Thou Art"},
-    {"time": "03:30", "number": 338, "title": "내 주를 가까이 하게 함은", "english": "Nearer My God to Thee"}
-  ],
-  "seasons": ["관련 절기를 배열로 작성. 가능한 값: 사순절, 부활절, 성탄절, 추수감사절. 해당 없으면 빈 배열 []"],
-  "usage": "이 PLAYLIST에 가장 적합한 용도. 가능한 값: 예배 전 묵상, 새벽기도, 수면/잠잘 때, 공부/집중, 카페 BGM, 기도 시간, 예배팀 추천"
+    {"number": ${playlistSongs[0].number}, "title": "${playlistSongs[0].title}", "english": "영어 원제목"},
+    ...
+  ]
 }
 
 규칙:
 - JSON 외에 설명, 인사말, 마크다운 코드블록(\`\`\`) 등을 절대 포함하지 마세요
-- songs 배열에 정확히 ${count}곡을 넣으세요
-- time은 이전 곡 종료 후 약 3-4분 간격으로 자연스럽게 배치하세요
-- number는 새찬송가 번호(1-645)를 정확히 작성하세요
-- title은 새찬송가에 수록된 정확한 한국어 제목을 작성하세요
-- english는 영어 원제가 있는 곡만 작성하고, 없으면 빈 문자열로 하세요
-- 주제에 맞는 곡을 선곡하고, 교회에서 자주 부르는 잘 알려진 곡 위주로 선곡하세요
-- seasons는 해당 없으면 빈 배열 []로 하세요
-- usage는 위 7개 값 중 하나만 작성하세요`;
+- songs 배열에 위 곡들을 순서대로 모두 넣으세요
+- number와 title은 위에 적힌 값을 그대로 사용하세요
+- english는 영어 원제가 있는 곡만 작성하고, 없으면 빈 문자열로 하세요`;
 
   document.getElementById('ai-p-prompt-text').textContent = prompt;
   document.getElementById('ai-p-prompt-area').style.display = 'block';
   document.getElementById('ai-p-error').style.display = 'none';
   document.getElementById('ai-p-response').value = '';
-  document.getElementById('p-theme').value = theme;
-  document.getElementById('p-duration').value = duration;
   setTimeout(() => { document.getElementById('ai-p-prompt-area').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
 }
 
@@ -955,35 +983,41 @@ function applyPlaylistAI() {
     errorEl.style.display = 'block'; return;
   }
 
-  if (Array.isArray(data.songs)) {
-    // 수록곡 목록 (번호 + 제목 + 영어)
-    const songList = data.songs.map(s => {
-      let line = `찬송가 ${s.number}장 ${s.title}`;
-      if (s.english) line += ` (${s.english})`;
-      return line;
-    }).join('\n');
-    document.getElementById('p-songs').value = songList;
+  if (!Array.isArray(data.songs)) {
+    errorEl.innerHTML = '<strong>오류:</strong> songs 배열이 없습니다.';
+    errorEl.style.display = 'block'; return;
+  }
 
-    // 타임스탬프 (시간만)
-    const times = data.songs.map(s => s.time).join('\n');
-    document.getElementById('p-timestamps').value = times;
-  }
-  if (Array.isArray(data.seasons)) {
-    document.querySelectorAll('input[name="p-season"]').forEach(cb => { cb.checked = false; });
-    data.seasons.forEach(s => {
-      const cb = document.querySelector(`input[name="p-season"][value="${s}"]`);
-      if (cb) cb.checked = true;
-    });
-  }
-  if (data.usage) {
-    const sel = document.getElementById('p-usage');
-    for (let opt of sel.options) { if (opt.value === data.usage) { sel.value = data.usage; break; } }
-  }
+  // 타임스탬프 + 곡명 + 영어제목 결합하여 수록곡 목록 생성
+  const duration = document.getElementById('ai-p-duration').value;
+  const totalMinutes = duration === '30분' ? 30 : duration === '1시간' ? 60 : duration === '2시간' ? 120 : 180;
+  const interval = Math.floor(totalMinutes / data.songs.length);
+
+  const songListText = data.songs.map((s, i) => {
+    const mins = i * interval;
+    const hh = Math.floor(mins / 60);
+    const mm = mins % 60;
+    let time;
+    if (totalMinutes >= 60) {
+      time = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:00`;
+    } else {
+      time = `${String(mm).padStart(2,'0')}:00`;
+    }
+    let line = `${time} 찬송가 ${s.number}장 ${s.title}`;
+    if (s.english) line += ` (${s.english})`;
+    return line;
+  }).join('\n');
+
+  document.getElementById('p-songs').value = songListText;
+  document.getElementById('p-duration').value = duration;
 
   errorEl.style.display = 'none';
   showToast();
-  setTimeout(() => { document.getElementById('p-timestamps').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+  setTimeout(() => { document.getElementById('p-songs').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
 }
+
+// Initialize empty song list display
+document.addEventListener('DOMContentLoaded', renderPlaylistSongs);
 
 // ===== AI Helper: Shorts =====
 function generateShortsPrompt() {
@@ -1160,20 +1194,18 @@ function generatePlaylist() {
   const duration = document.getElementById('p-duration').value;
   const usage = document.getElementById('p-usage').value;
   const songs = document.getElementById('p-songs').value.trim();
-  const timestamps = document.getElementById('p-timestamps').value.trim();
   const seasons = getSeasons('p-season');
 
   if (!theme) { alert('PLAYLIST 주제를 입력해주세요.'); return; }
 
   // 수록곡 파싱
   const songLines = songs ? songs.split('\n').map(l => l.trim()).filter(l => l.length > 0) : [];
-  // 타임스탬프 파싱
-  const timeLines = timestamps ? timestamps.split('\n').map(l => l.trim()).filter(l => l.length > 0) : [];
 
-  // 수록곡에서 간단한 곡명만 추출 (제목용)
+  // 수록곡에서 간단한 곡명만 추출 (제목용) - 타임스탬프와 영어제목 제거
   const shortNames = songLines.map(line => {
-    // "찬송가 27장 주 하나님 지으신 모든 세계 (How Great Thou Art)" → "주 하나님 지으신 모든 세계"
-    let name = line.replace(/^찬송가\s*\d+장\s*/, '').replace(/\s*\(.*\)\s*$/, '').trim();
+    let name = line.replace(/^\d{1,2}:\d{2}(?::\d{2})?\s*/, ''); // 타임스탬프 제거
+    name = name.replace(/^찬송가\s*\d+장\s*/, ''); // "찬송가 N장" 제거
+    name = name.replace(/\s*\(.*\)\s*$/, '').trim(); // (영어제목) 제거
     return name || line;
   });
 
@@ -1193,17 +1225,9 @@ function generatePlaylist() {
   let desc = `${theme} ${duration} 모음 - 중간광고없음 - ALL THAT HYMN\n`;
   desc += `${usage}, 묵상, 기도, 예배 전 배경음악으로 들어보세요.\n`;
 
-  // 타임스탬프 + 수록곡 결합
   if (songLines.length > 0) {
     desc += `\n[수록곡]\n`;
-    songLines.forEach((song, i) => {
-      const time = timeLines[i] || '';
-      if (time) {
-        desc += `${time} ${song}\n`;
-      } else {
-        desc += `${song}\n`;
-      }
-    });
+    songLines.forEach(song => { desc += `${song}\n`; });
   }
 
   desc += `\n더 많은 찬송가 편곡 듣기:\n`;
