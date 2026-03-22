@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALL THAT HYMN | SEO Generator</title>
+<style>
+  :root {
+    --primary: #1a1a2e;
+    --accent: #e94560;
+    --accent2: #0f3460;
+    --bg: #f8f9fa;
+    --card: #ffffff;
+    --border: #e0e4e8;
+    --text: #2c3e50;
+    --text-light: #6c757d;
+    --success: #27ae60;
+    --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+  }
+  /* Header */
+  .header {
+    background: var(--primary); color: white; padding: 24px 0; text-align: center;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .header h1 { font-size: 20px; font-weight: 700; letter-spacing: 2px; }
+  .header p { font-size: 13px; color: #aaa; margin-top: 4px; }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 24px 16px 80px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex; gap: 0; margin-bottom: 24px; border-radius: var(--radius);
+    overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .tab {
+    flex: 1; padding: 14px 8px; text-align: center; cursor: pointer;
+    background: white; border: none; font-size: 13px; font-weight: 600;
+    color: var(--text-light); transition: all 0.2s;
+    border-bottom: 3px solid transparent;
+  }
+  .tab:hover { background: #f0f4f8; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); background: white; }
+
+  /* Form Card */
+  .card {
+    background: var(--card); border-radius: var(--radius); padding: 28px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 20px;
+    padding-bottom: 12px; border-bottom: 2px solid var(--bg);
+  }
+
+  /* Form Elements */
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block; font-size: 13px; font-weight: 600; color: var(--text);
+    margin-bottom: 6px;
+  }
+  .form-group .hint {
+    font-size: 11px; color: var(--text-light); margin-bottom: 6px;
+  }
+  input[type="text"], input[type="number"], select, textarea {
+    width: 100%; padding: 12px 14px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 14px; color: var(--text);
+    background: white; transition: border-color 0.2s;
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--accent2);
+    box-shadow: 0 0 0 3px rgba(15,52,96,0.1);
+  }
+  textarea { resize: vertical; min-height: 100px; }
+  select { cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236c757d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+    padding-right: 36px;
+  }
+
+  /* Checkbox Group */
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .checkbox-group label {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s;
+  }
+  .checkbox-group label:hover { border-color: var(--accent2); }
+  .checkbox-group input:checked + span { color: var(--accent); }
+  .checkbox-group label:has(input:checked) {
+    border-color: var(--accent); background: #fef0f3;
+  }
+  .checkbox-group input { display: none; }
+
+  /* Generate Button */
+  .btn-generate {
+    width: 100%; padding: 16px; background: var(--accent); color: white;
+    border: none; border-radius: 10px; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 1px;
+  }
+  .btn-generate:hover { background: #d63853; transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(233,69,96,0.3); }
+  .btn-generate:active { transform: translateY(0); }
+
+  /* Output Section */
+  .output-section { display: none; }
+  .output-section.show { display: block; }
+
+  .output-card {
+    background: var(--card); border-radius: var(--radius); padding: 20px;
+    margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--accent2);
+  }
+  .output-card.accent { border-left-color: var(--accent); }
+
+  .output-label {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .output-label span {
+    font-size: 13px; font-weight: 700; color: var(--accent2);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .btn-copy {
+    padding: 6px 16px; background: var(--primary); color: white;
+    border: none; border-radius: 6px; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-copy:hover { background: var(--accent2); }
+  .btn-copy.copied { background: var(--success); }
+
+  .output-text {
+    background: #f7f8fa; padding: 14px 16px; border-radius: 8px;
+    font-size: 13px; line-height: 1.7; white-space: pre-wrap;
+    word-break: break-word; border: 1px solid #eee;
+    color: var(--text); max-height: 400px; overflow-y: auto;
+  }
+
+  /* Info box */
+  .info-box {
+    background: #ebf5fb; border-left: 4px solid var(--accent2);
+    padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 20px;
+    font-size: 13px; color: var(--accent2); line-height: 1.6;
+  }
+
+  /* Row layout */
+  .form-row { display: flex; gap: 14px; }
+  .form-row .form-group { flex: 1; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: var(--success); color: white; padding: 12px 28px;
+    border-radius: 8px; font-size: 14px; font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2); z-index: 1000;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .form-row { flex-direction: column; gap: 0; }
+    .tabs { font-size: 12px; }
+    .tab { padding: 12px 4px; font-size: 11px; }
+    .container { padding: 16px 12px 80px; }
+    .card { padding: 20px 16px; }
+  }
+
+  /* Hidden */
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>ALL THAT HYMN</h1>
+  <p>YouTube SEO Generator</p>
+</div>
+
+<div class="container">
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('hymn')">찬송가</button>
+    <button class="tab" onclick="switchTab('gospel')">복음성가/CCM</button>
+    <button class="tab" onclick="switchTab('playlist')">PLAYLIST</button>
+    <button class="tab" onclick="switchTab('shorts')">Shorts</button>
+  </div>
+
+  <!-- ===== TAB: 찬송가 ===== -->
+  <div id="tab-hymn" class="tab-content">
+    <div class="card">
+      <div class="card-title">찬송가 단독 곡 정보 입력</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>찬송가 번호 *</label>
+          <input type="number" id="h-num" placeholder="예: 338" min="1" max="645">
+        </div>
+        <div class="form-group">
+          <label>편곡 스타일</label>
+          <select id="h-style">
+            <option value="어쿠스틱">어쿠스틱 (기타/피아노+보컬)</option>
+            <option value="아카펠라">아카펠라</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>찬송가 제목 (한국어) *</label>
+        <input type="text" id="h-title-kr" placeholder="예: 내 주를 가까이 하게 함은">
+      </div>
+
+      <div class="form-group">
+        <label>영어 제목</label>
+        <div class="hint">모르면 비워두세요. 영어 제목이 있으면 글로벌 노출에 큰 도움이 됩니다.</div>
+        <input type="text" id="h-title-en" placeholder="예: Nearer My God to Thee">
+      </div>
+
+      <div class="form-group">
+        <label>절기/시즌 (해당되는 것 모두 선택)</label>
+        <div class="hint">관련 절기를 모두 선택하면 연중 검색 노출이 높아집니다.</div>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="h-season" value="사순절"><span>사순절</span></label>
+          <label><input type="checkbox" name="h-season" value="고난주간"><span>고난주간</span></label>
+          <label><input type="checkbox" name="h-season" value="부활절"><span>부활절</span></label>
+          <label><input type="checkbox" name="h-season" value="성탄절"><span>성탄절</span></label>
+          <label><input type="checkbox" name="h-season" value="추수감사절"><span>추수감사절</span></label>
+          <label><input type="checkbox" name="h-season" value="종려주일"><span>종려주일</span></label>
+          <label><input type="checkbox" name="h-season" value="신년"><span>신년</span></label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>곡 소개 (선택)</label>
+        <div class="hint">작곡 배경, 묵상 등 1-2줄. 비워두면 기본 문구가 생성됩니다.</div>
+        <textarea id="h-intro" rows="2" placeholder="예: 1856년 사라 애덤스가 작사한 곡으로, 창세기 28장 야곱의 이야기를 바탕으로 합니다."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>용도 (선택)</label>
+        <div class="hint">영상이 특정 용도에 적합하면 선택하세요. 검색 노출에 도움이 됩니다.</div>
+        <select id="h-usage">
+          <option value="">선택 안함</option>
+          <option value="묵상">묵상용</option>
+          <option value="기도">기도 시간용</option>
+          <option value="예배">예배용</option>
+          <option value="수면">잠잘 때 듣기 좋은</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>가사 (전체 입력 권장)</label>
+        <div class="hint">가사 전체를 넣으면 가사 구절 검색에 노출되어 SEO에 매우 효과적입니다. 제목에 "가사포함"이 자동 추가됩니다.</div>
+        <textarea id="h-lyrics" rows="6" placeholder="1. 내 주를 가까이 하게 함은&#10;십자가 짐같은 고생이나&#10;내 일생 소원은&#10;늘 찬송하면서&#10;주께 더 나가기 원합니다&#10;&#10;2. 이 세상 지나서..."></textarea>
+      </div>
+
+      <div class="info-box">
+        <strong>카테고리 안내:</strong> YouTube Studio에서 영상 카테고리를 반드시 <strong>"음악"</strong>으로 설정하세요. YouTube Music 연동 및 음악 추천 알고리즘에 포함됩니다.
+      </div>
+
+      <button class="btn-generate" onclick="generateHymn()">SEO 콘텐츠 생성</button>
+    </div>
+  </div>
+
+  <!-- ===== TAB: 복음성가 ===== -->
+  <div id="tab-gospel" class="tab-content hidden">
+    <div class="card">
+      <div class="card-title">복음성가 / CCM 정보 입력</div>
+
+      <div class="form-group">
+        <label>곡 제목 (한국어) *</label>
+        <input type="text" id="g-title-kr" placeholder="예: 주의 자녀로 산다는 것은">
+      </div>
+
+      <div class="form-group">
+        <label>영어 제목 (선택)</label>
+        <input type="text" id="g-title-en" placeholder="예: Living as God's Child">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>편곡 스타일</label>
+          <select id="g-style">
+            <option value="어쿠스틱">어쿠스틱</option>
+            <option value="아카펠라">아카펠라</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>카테고리</label>
+          <select id="g-category">
+            <option value="복음성가">복음성가</option>
+            <option value="CCM">CCM</option>
+            <option value="찬양">찬양</option>
+            <option value="축복송">축복송</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>곡 소개 (선택)</label>
+        <textarea id="g-intro" rows="2" placeholder="곡에 대한 간단한 소개"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>가사 1절 (선택)</label>
+        <textarea id="g-lyrics" rows="4" placeholder="가사 1절 입력"></textarea>
+      </div>
+
+      <button class="btn-generate" onclick="generateGospel()">SEO 콘텐츠 생성</button>
+    </div>
+  </div>
+
+  <!-- ===== TAB: PLAYLIST ===== -->
+  <div id="tab-playlist" class="tab-content hidden">
+    <div class="card">
+      <div class="card-title">PLAYLIST 정보 입력</div>
+
+      <div class="info-box">
+        PLAYLIST는 채널 성장의 핵심 엔진입니다. 제목에 반드시 "중간광고없음"을 포함하세요.
+      </div>
+
+      <div class="form-group">
+        <label>PLAYLIST 주제 *</label>
+        <input type="text" id="p-theme" placeholder="예: 교회에서 자주 부르는 찬송가, 새벽기도 찬송가, 사순절 찬송가">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>총 재생 시간</label>
+          <select id="p-duration">
+            <option value="30분">30분</option>
+            <option value="1시간" selected>1시간</option>
+            <option value="2시간">2시간</option>
+            <option value="3시간">3시간</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>용도</label>
+          <select id="p-usage">
+            <option value="예배 전 묵상">예배 전 묵상</option>
+            <option value="새벽기도">새벽기도</option>
+            <option value="수면/잠잘 때">수면/잠잘 때</option>
+            <option value="공부/집중">공부/집중</option>
+            <option value="카페 BGM">카페 BGM</option>
+            <option value="기도 시간">기도 시간</option>
+            <option value="예배팀 추천">예배팀 추천</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>절기/시즌 (해당되는 것 선택)</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="p-season" value="사순절"><span>사순절</span></label>
+          <label><input type="checkbox" name="p-season" value="부활절"><span>부활절</span></label>
+          <label><input type="checkbox" name="p-season" value="성탄절"><span>성탄절</span></label>
+          <label><input type="checkbox" name="p-season" value="추수감사절"><span>추수감사절</span></label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>수록곡 & 타임스탬프 (선택)</label>
+        <div class="hint">각 줄에 "시간 곡명" 형식으로 입력. 예: 00:00 만복의 근원 하나님</div>
+        <textarea id="p-timestamps" rows="6" placeholder="00:00 만복의 근원 하나님&#10;03:25 주 하나님 지으신 모든 세계&#10;07:40 내 주를 가까이 하게 함은"></textarea>
+      </div>
+
+      <button class="btn-generate" onclick="generatePlaylist()">SEO 콘텐츠 생성</button>
+    </div>
+  </div>
+
+  <!-- ===== TAB: Shorts ===== -->
+  <div id="tab-shorts" class="tab-content hidden">
+    <div class="card">
+      <div class="card-title">Shorts 제목 생성</div>
+
+      <div class="info-box">
+        모든 Shorts에 고유한 제목을 부여해야 합니다. 현재 동일 제목은 검색 노출에 매우 불리합니다.
+      </div>
+
+      <div class="form-group">
+        <label>영상 유형 *</label>
+        <select id="s-type">
+          <option value="찬송가">찬송가 하이라이트</option>
+          <option value="복음성가">복음성가/CCM 하이라이트</option>
+          <option value="비하인드">연주/녹음 비하인드</option>
+          <option value="참여형">참여형 (퀴즈 등)</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>찬송가 번호 (찬송가인 경우)</label>
+          <input type="number" id="s-num" placeholder="예: 338" min="1" max="645">
+        </div>
+        <div class="form-group">
+          <label>곡 제목 *</label>
+          <input type="text" id="s-title" placeholder="예: 내 주를 가까이 하게 함은">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>영어 제목 (선택)</label>
+        <input type="text" id="s-title-en" placeholder="예: Nearer My God to Thee">
+      </div>
+
+      <div class="form-group">
+        <label>절기 (선택)</label>
+        <select id="s-season">
+          <option value="">없음</option>
+          <option value="사순절">사순절</option>
+          <option value="부활절">부활절</option>
+          <option value="성탄절">성탄절</option>
+          <option value="고난주간">고난주간</option>
+          <option value="종려주일">종려주일</option>
+        </select>
+      </div>
+
+      <button class="btn-generate" onclick="generateShorts()">Shorts 제목 생성</button>
+    </div>
+  </div>
+
+  <!-- ===== OUTPUT SECTION ===== -->
+  <div id="output" class="output-section">
+    <div id="out-title" class="output-card accent">
+      <div class="output-label">
+        <span>영상 제목</span>
+        <button class="btn-copy" onclick="copyField('out-title-text')">복사</button>
+      </div>
+      <div class="output-text" id="out-title-text"></div>
+    </div>
+
+    <div id="out-shorts-title" class="output-card">
+      <div class="output-label">
+        <span>Shorts 제목</span>
+        <button class="btn-copy" onclick="copyField('out-shorts-text')">복사</button>
+      </div>
+      <div class="output-text" id="out-shorts-text"></div>
+    </div>
+
+    <div id="out-desc" class="output-card">
+      <div class="output-label">
+        <span>영상 설명</span>
+        <button class="btn-copy" onclick="copyField('out-desc-text')">복사</button>
+      </div>
+      <div class="output-text" id="out-desc-text"></div>
+    </div>
+
+    <div id="out-tags" class="output-card">
+      <div class="output-label">
+        <span>태그</span>
+        <button class="btn-copy" onclick="copyField('out-tags-text')">복사</button>
+      </div>
+      <div class="output-text" id="out-tags-text"></div>
+    </div>
+
+    <div id="out-hashtags" class="output-card">
+      <div class="output-label">
+        <span>해시태그 (설명 하단용)</span>
+        <button class="btn-copy" onclick="copyField('out-hashtags-text')">복사</button>
+      </div>
+      <div class="output-text" id="out-hashtags-text"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">복사 완료!</div>
+
+<script>
+// ===== Tab Switching =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.remove('hidden');
+  event.target.classList.add('active');
+  document.getElementById('output').classList.remove('show');
+}
+
+// ===== Copy =====
+function copyField(id) {
+  const el = document.getElementById(id);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = el.parentElement.querySelector('.btn-copy');
+    btn.textContent = '완료!';
+    btn.classList.add('copied');
+    showToast();
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1500);
+}
+
+function showOutput() {
+  document.getElementById('output').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function setOutput(title, shortsTitle, desc, tags, hashtags) {
+  document.getElementById('out-title-text').textContent = title;
+  document.getElementById('out-shorts-text').textContent = shortsTitle;
+  document.getElementById('out-desc-text').textContent = desc;
+  document.getElementById('out-tags-text').textContent = tags;
+  document.getElementById('out-hashtags-text').textContent = hashtags;
+
+  // Show/hide shorts title based on content
+  document.getElementById('out-shorts-title').style.display = shortsTitle ? 'block' : 'none';
+
+  showOutput();
+}
+
+// ===== Season helpers =====
+function getSeasons(name) {
+  const checked = document.querySelectorAll(`input[name="${name}"]:checked`);
+  return Array.from(checked).map(el => el.value);
+}
+
+function seasonTagsKr(seasons) {
+  const map = {
+    '사순절': ['사순절', '사순절찬송가', '사순절찬양'],
+    '고난주간': ['고난주간', '고난주간찬송가'],
+    '부활절': ['부활절', '부활절찬송가', '부활찬양'],
+    '성탄절': ['성탄절', '크리스마스', '성탄절찬송가', '크리스마스캐롤'],
+    '추수감사절': ['추수감사절', '추수감사절찬송가'],
+    '종려주일': ['종려주일', '종려주일찬양'],
+    '신년': ['신년', '새해찬송가'],
+  };
+  let tags = [];
+  seasons.forEach(s => { if (map[s]) tags.push(...map[s]); });
+  return [...new Set(tags)];
+}
+
+function seasonTagsEn(seasons) {
+  const map = {
+    '사순절': ['lent', 'lent hymn'],
+    '고난주간': ['holy week', 'passion week'],
+    '부활절': ['easter', 'easter hymn', 'resurrection'],
+    '성탄절': ['christmas', 'christmas carol', 'christmas hymn'],
+    '추수감사절': ['thanksgiving', 'thanksgiving hymn'],
+    '종려주일': ['palm sunday'],
+    '신년': ['new year'],
+  };
+  let tags = [];
+  seasons.forEach(s => { if (map[s]) tags.push(...map[s]); });
+  return [...new Set(tags)];
+}
+
+function seasonLabel(seasons) {
+  if (seasons.length === 0) return '';
+  return ' - ' + seasons[0] + ' 찬양';
+}
+
+// ===== Generate: 찬송가 =====
+function generateHymn() {
+  const num = document.getElementById('h-num').value.trim();
+  const kr = document.getElementById('h-title-kr').value.trim();
+  const en = document.getElementById('h-title-en').value.trim();
+  const style = document.getElementById('h-style').value;
+  const usage = document.getElementById('h-usage').value;
+  const intro = document.getElementById('h-intro').value.trim();
+  const lyrics = document.getElementById('h-lyrics').value.trim();
+  const seasons = getSeasons('h-season');
+
+  if (!num || !kr) { alert('찬송가 번호와 제목을 입력해주세요.'); return; }
+
+  // === TITLE (| → - , 60자 이내 목표, 핵심 키워드 앞배치) ===
+  let title = `찬송가 ${num}장 ${kr} - ${style} 편곡`;
+  if (lyrics) title += ' (가사포함)';
+  if (en) title += ` - ${en}`;
+  if (seasons.length > 0) title += seasonLabel(seasons);
+
+  // === SHORTS TITLE ===
+  let shortsTitle = `찬송가 ${num}장 ${kr}`;
+  if (en) shortsTitle += ` - ${en}`;
+  shortsTitle += ` #shorts #찬송가`;
+  if (seasons.length > 0) shortsTitle += ` #${seasons[0]}`;
+
+  // === DESCRIPTION (첫 2줄에 핵심 키워드 집중) ===
+  let desc = `찬송가 ${num}장 "${kr}" ${style} 편곡 - ${en ? en + ' - ' : ''}ALL THAT HYMN\n`;
+  desc += `찬송가 편곡, 예배 음악, ${usage ? usage + '에 좋은 ' : ''}찬양을 들어보세요.`;
+  if (intro) desc += `\n\n${intro}`;
+  if (lyrics) desc += `\n\n[가사]\n${lyrics}`;
+  desc += `\n\n`;
+  desc += `더 많은 찬송가 편곡 듣기:\n`;
+  desc += `▶ 교회에서 자주 부르는 찬송가 모음: [PLAYLIST 링크]\n`;
+  desc += `▶ 새벽기도 찬송가 PLAYLIST: [PLAYLIST 링크]\n`;
+  desc += `\nInstagram: https://www.instagram.com/allthathymn/\n\n`;
+  // 해시태그 3~5개 (설명 하단, 15개 미만 필수)
+  let descHashtags = [`#찬송가${num}장`, `#${kr.replace(/ /g, '')}`, '#찬송가편곡'];
+  if (en) descHashtags.push(`#${en.replace(/ /g, '')}`);
+  if (seasons.length > 0) descHashtags.push(`#${seasons[0]}`);
+  desc += descHashtags.slice(0, 5).join(' ');
+
+  // === TAGS (5-8개, 핵심만) ===
+  let tagList = [
+    `찬송가 ${num}장`, kr,
+    '찬송가 편곡', '예배 음악',
+    'hymn cover', 'worship music',
+    'ALL THAT HYMN',
+  ];
+  if (en) tagList.splice(2, 0, en);
+  if (style === '아카펠라') tagList.push('아카펠라 찬양');
+  if (seasons.length > 0) tagList.push(seasons[0]);
+  let tags = [...new Set(tagList)].slice(0, 8).join(', ');
+
+  // === HASHTAGS (설명에 이미 포함, 별도 출력은 참고용) ===
+  let hashtags = descHashtags.slice(0, 5).join(' ');
+
+  setOutput(title, shortsTitle, desc, tags, hashtags);
+}
+
+// ===== Generate: 복음성가 =====
+function generateGospel() {
+  const kr = document.getElementById('g-title-kr').value.trim();
+  const en = document.getElementById('g-title-en').value.trim();
+  const style = document.getElementById('g-style').value;
+  const category = document.getElementById('g-category').value;
+  const intro = document.getElementById('g-intro').value.trim();
+  const lyrics = document.getElementById('g-lyrics').value.trim();
+
+  if (!kr) { alert('곡 제목을 입력해주세요.'); return; }
+
+  // Title (- 사용)
+  let title = `${kr} - ${category} ${style} 편곡`;
+  if (lyrics) title += ' (가사포함)';
+  if (en) title += ` - ${en}`;
+
+  // Shorts
+  let shortsTitle = `${kr} - ${category} 편곡 #shorts #${category} #찬양`;
+
+  // Description (첫 2줄 키워드 집중)
+  let desc = `"${kr}" ${category} ${style} 편곡 - ALL THAT HYMN\n`;
+  desc += `${category}, 찬양, 예배 음악을 어쿠스틱 편곡으로 들어보세요.`;
+  if (intro) desc += `\n\n${intro}`;
+  if (lyrics) desc += `\n\n[가사]\n${lyrics}`;
+  desc += `\n\n`;
+  desc += `더 많은 찬양 듣기:\n`;
+  desc += `▶ 교회에서 자주 부르는 찬송가 모음: [PLAYLIST 링크]\n`;
+  desc += `▶ 찬양예배 CCM PLAYLIST: [PLAYLIST 링크]\n`;
+  desc += `\nInstagram: https://www.instagram.com/allthathymn/\n\n`;
+  let descHash = [`#${kr.replace(/ /g, '')}`, `#${category}`, '#찬양', '#ALLTHATHYMN'];
+  desc += descHash.slice(0, 4).join(' ');
+
+  // Tags (5-8개)
+  let tagList = [kr, category, '찬양', '예배 음악', 'worship music', 'ALL THAT HYMN'];
+  if (en) tagList.splice(1, 0, en);
+  let tags = [...new Set(tagList)].slice(0, 8).join(', ');
+
+  let hashtags = descHash.slice(0, 4).join(' ');
+
+  setOutput(title, shortsTitle, desc, tags, hashtags);
+}
+
+// ===== Generate: PLAYLIST =====
+function generatePlaylist() {
+  const theme = document.getElementById('p-theme').value.trim();
+  const duration = document.getElementById('p-duration').value;
+  const usage = document.getElementById('p-usage').value;
+  const timestamps = document.getElementById('p-timestamps').value.trim();
+  const seasons = getSeasons('p-season');
+
+  if (!theme) { alert('PLAYLIST 주제를 입력해주세요.'); return; }
+
+  // Title (- 사용, 곡명 나열)
+  let title = `${theme} 모음 ${duration} - 중간광고없음 - ${usage}`;
+  // 타임스탬프에서 곡명 추출하여 제목에 일부 포함
+  if (timestamps) {
+    const songNames = timestamps.split('\n')
+      .map(line => line.replace(/^\d{1,2}:\d{2}(?::\d{2})?\s*/, '').trim())
+      .filter(n => n.length > 0);
+    if (songNames.length > 0) {
+      const preview = songNames.slice(0, 3).join(', ');
+      // 제목이 너무 길지 않으면 추가
+      if ((title + ' - ' + preview).length < 90) {
+        title += ` - ${preview}`;
+        if (songNames.length > 3) title += ' 외';
+      }
+    }
+  }
+
+  let shortsTitle = '';
+
+  // Description (첫 2줄 키워드 집중)
+  let desc = `${theme} ${duration} 모음 - 중간광고없음 - ALL THAT HYMN\n`;
+  desc += `${usage}, 묵상, 기도, 예배 전 배경음악으로 들어보세요.\n`;
+  if (timestamps) {
+    desc += `\n[수록곡]\n${timestamps}\n`;
+  }
+  desc += `\n더 많은 찬송가 편곡 듣기:\n`;
+  desc += `▶ 교회에서 자주 부르는 찬송가 모음: [PLAYLIST 링크]\n`;
+  desc += `▶ 새벽기도 찬송가 PLAYLIST: [PLAYLIST 링크]\n`;
+  desc += `\nInstagram: https://www.instagram.com/allthathymn/\n\n`;
+  let descHash = ['#찬송가모음', '#중간광고없음', '#예배음악', '#ALLTHATHYMN'];
+  if (seasons.length > 0) descHash.push(`#${seasons[0]}`);
+  desc += descHash.slice(0, 5).join(' ');
+
+  // Tags (5-8개)
+  let tagList = [
+    '찬송가 모음', theme, '중간광고없음',
+    '예배 음악', 'hymn playlist', 'worship music', 'ALL THAT HYMN',
+  ];
+  if (seasons.length > 0) tagList.push(seasons[0]);
+  let tags = [...new Set(tagList)].slice(0, 8).join(', ');
+
+  let hashtags = descHash.slice(0, 5).join(' ');
+
+  setOutput(title, shortsTitle, desc, tags, hashtags);
+}
+
+// ===== Generate: Shorts =====
+function generateShorts() {
+  const type = document.getElementById('s-type').value;
+  const num = document.getElementById('s-num').value.trim();
+  const title_kr = document.getElementById('s-title').value.trim();
+  const title_en = document.getElementById('s-title-en').value.trim();
+  const season = document.getElementById('s-season').value;
+
+  if (!title_kr) { alert('곡 제목을 입력해주세요.'); return; }
+
+  let shortsTitle = '';
+  let tags = '';
+
+  if (type === '찬송가' && num) {
+    shortsTitle = `찬송가 ${num}장 ${title_kr}`;
+    if (title_en) shortsTitle += ` - ${title_en}`;
+    shortsTitle += ` #shorts #찬송가`;
+    if (season) shortsTitle += ` #${season}`;
+    tags = [`찬송가 ${num}장`, title_kr, '찬송가 편곡', 'hymn', 'ALL THAT HYMN'].join(', ');
+
+  } else if (type === '복음성가') {
+    shortsTitle = `${title_kr} - 복음성가 편곡 #shorts #복음성가 #찬양`;
+    tags = [title_kr, '복음성가', '찬양', 'worship', 'ALL THAT HYMN'].join(', ');
+
+  } else if (type === '비하인드') {
+    shortsTitle = `${title_kr} 편곡 비하인드 #shorts #비하인드 #ALLTHATHYMN`;
+    tags = [title_kr, '비하인드', '편곡 과정', 'ALL THAT HYMN'].join(', ');
+
+  } else if (type === '참여형') {
+    shortsTitle = `이 찬송가 뭔지 아시나요? - ${title_kr} #shorts #찬송가퀴즈`;
+    tags = ['찬송가 퀴즈', title_kr, '찬송가', 'ALL THAT HYMN'].join(', ');
+  }
+
+  document.getElementById('out-title-text').textContent = '';
+  document.getElementById('out-shorts-text').textContent = shortsTitle;
+  document.getElementById('out-desc-text').textContent = '';
+  document.getElementById('out-tags-text').textContent = tags;
+  document.getElementById('out-hashtags-text').textContent = '';
+
+  document.getElementById('out-title').style.display = 'none';
+  document.getElementById('out-shorts-title').style.display = 'block';
+  document.getElementById('out-desc').style.display = 'none';
+  document.getElementById('out-tags').style.display = 'block';
+  document.getElementById('out-hashtags').style.display = 'none';
+
+  showOutput();
+}
+</script>
+
+</body>
+</html>
