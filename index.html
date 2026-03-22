@@ -76,6 +76,14 @@
     box-shadow: 0 0 0 3px rgba(15,52,96,0.1);
   }
   textarea { resize: vertical; min-height: 100px; }
+  input::placeholder, textarea::placeholder { color: #c0c6cc; }
+
+  /* AI 도우미 접기/펼치기 */
+  .ai-toggle { cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+  .ai-toggle .arrow { transition: transform 0.2s; font-size: 14px; color: var(--accent); }
+  .ai-toggle.open .arrow { transform: rotate(180deg); }
+  .ai-body { display: none; padding-top: 16px; }
+  .ai-body.open { display: block; }
   select { cursor: pointer; appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236c757d' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat; background-position: right 12px center;
@@ -195,9 +203,13 @@
 
     <!-- AI 도우미 -->
     <div class="card" style="border-left: 4px solid var(--accent);">
-      <div class="card-title" style="color: var(--accent);">AI 도우미 - 빈칸 자동 채우기</div>
+      <div class="ai-toggle" onclick="toggleAI(this)">
+        <div class="card-title" style="color: var(--accent); margin-bottom: 0; padding-bottom: 0; border-bottom: none;">AI 도우미 - 빈칸 자동 채우기</div>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="ai-body">
 
-      <div class="info-box">
+      <div class="info-box" style="margin-top: 16px;">
         <strong>사용법:</strong> 찬송가 번호와 제목만 입력 → 프롬프트 생성 → ChatGPT/Claude에 붙여넣기 → 응답을 아래에 붙여넣기 → 적용
       </div>
 
@@ -233,6 +245,8 @@
 
         <div id="ai-error" style="display:none; color: var(--accent); font-size: 13px; margin-top: 10px; padding: 10px; background: #fef0f3; border-radius: 8px;"></div>
       </div>
+
+      </div><!-- /ai-body -->
     </div>
 
     <div class="card">
@@ -298,7 +312,7 @@
       <div class="form-group">
         <label>가사 (전체 입력 권장)</label>
         <div class="hint">가사 전체를 넣으면 가사 구절 검색에 노출되어 SEO에 매우 효과적입니다. 제목에 "가사포함"이 자동 추가됩니다.</div>
-        <textarea id="h-lyrics" rows="6" placeholder="1. 내 주를 가까이 하게 함은&#10;십자가 짐같은 고생이나&#10;내 일생 소원은&#10;늘 찬송하면서&#10;주께 더 나가기 원합니다&#10;&#10;2. 이 세상 지나서..."></textarea>
+        <textarea id="h-lyrics" rows="6" placeholder="예: 1. 내 주를 가까이 하게 함은&#10;십자가 짐같은 고생이나&#10;내 일생 소원은&#10;늘 찬송하면서&#10;주께 더 나가기 원합니다&#10;&#10;2. 이 세상 지나서..."></textarea>
       </div>
 
       <div class="info-box">
@@ -314,8 +328,12 @@
 
     <!-- AI 도우미: 복음성가 -->
     <div class="card" style="border-left: 4px solid var(--accent);">
-      <div class="card-title" style="color: var(--accent);">AI 도우미 - 빈칸 자동 채우기</div>
-      <div class="form-group">
+      <div class="ai-toggle" onclick="toggleAI(this)">
+        <div class="card-title" style="color: var(--accent); margin-bottom: 0; padding-bottom: 0; border-bottom: none;">AI 도우미 - 빈칸 자동 채우기</div>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="ai-body">
+      <div class="form-group" style="margin-top: 16px;">
         <label>곡 제목 (한국어) *</label>
         <input type="text" id="ai-g-title" placeholder="예: 주의 자녀로 산다는 것은">
       </div>
@@ -335,6 +353,8 @@
         <button class="btn-generate" style="background: var(--success);" onclick="applyGospelAI()">3단계: 아래 폼에 자동 적용</button>
         <div id="ai-g-error" style="display:none; color: var(--accent); font-size: 13px; margin-top: 10px; padding: 10px; background: #fef0f3; border-radius: 8px;"></div>
       </div>
+
+      </div><!-- /ai-body -->
     </div>
 
     <div class="card">
@@ -376,7 +396,7 @@
 
       <div class="form-group">
         <label>가사 1절 (선택)</label>
-        <textarea id="g-lyrics" rows="4" placeholder="가사 1절 입력"></textarea>
+        <textarea id="g-lyrics" rows="4" placeholder="예: 주의 자녀로 산다는 것은&#10;날마다 감사뿐이네..."></textarea>
       </div>
 
       <button class="btn-generate" onclick="generateGospel()">SEO 콘텐츠 생성</button>
@@ -388,9 +408,13 @@
 
     <!-- AI 도우미: PLAYLIST -->
     <div class="card" style="border-left: 4px solid var(--accent);">
-      <div class="card-title" style="color: var(--accent);">AI 도우미 - 수록곡 영어 제목 자동 채우기</div>
+      <div class="ai-toggle" onclick="toggleAI(this)">
+        <div class="card-title" style="color: var(--accent); margin-bottom: 0; padding-bottom: 0; border-bottom: none;">AI 도우미 - 수록곡 영어 제목 자동 채우기</div>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="ai-body">
 
-      <div class="info-box">
+      <div class="info-box" style="margin-top: 16px;">
         곡을 추가하고 → LLM 프롬프트 생성 → 응답 붙여넣기 → 적용하면 영어 제목이 자동으로 채워집니다.
       </div>
 
@@ -436,6 +460,8 @@
         <button class="btn-generate" style="background: var(--success);" onclick="applyPlaylistAI()">아래 폼에 자동 적용</button>
         <div id="ai-p-error" style="display:none; color: var(--accent); font-size: 13px; margin-top: 10px; padding: 10px; background: #fef0f3; border-radius: 8px;"></div>
       </div>
+
+      </div><!-- /ai-body -->
     </div>
 
     <div class="card">
@@ -499,8 +525,12 @@
 
     <!-- AI 도우미: Shorts -->
     <div class="card" style="border-left: 4px solid var(--accent);">
-      <div class="card-title" style="color: var(--accent);">AI 도우미 - Shorts 정보 자동 채우기</div>
-      <div class="form-row">
+      <div class="ai-toggle" onclick="toggleAI(this)">
+        <div class="card-title" style="color: var(--accent); margin-bottom: 0; padding-bottom: 0; border-bottom: none;">AI 도우미 - Shorts 정보 자동 채우기</div>
+        <span class="arrow">&#9660;</span>
+      </div>
+      <div class="ai-body">
+      <div class="form-row" style="margin-top: 16px;">
         <div class="form-group">
           <label>찬송가 번호 (찬송가인 경우)</label>
           <input type="number" id="ai-s-num" placeholder="예: 338" min="1" max="645">
@@ -526,6 +556,8 @@
         <button class="btn-generate" style="background: var(--success);" onclick="applyShortsAI()">3단계: 아래 폼에 자동 적용</button>
         <div id="ai-s-error" style="display:none; color: var(--accent); font-size: 13px; margin-top: 10px; padding: 10px; background: #fef0f3; border-radius: 8px;"></div>
       </div>
+
+      </div><!-- /ai-body -->
     </div>
 
     <div class="card">
@@ -625,6 +657,13 @@
 <div class="toast" id="toast">복사 완료!</div>
 
 <script>
+// ===== AI Toggle =====
+function toggleAI(el) {
+  el.classList.toggle('open');
+  const body = el.nextElementSibling;
+  body.classList.toggle('open');
+}
+
 // ===== Tab Switching =====
 function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
