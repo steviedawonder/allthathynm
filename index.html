@@ -192,6 +192,49 @@
 
   <!-- ===== TAB: 찬송가 ===== -->
   <div id="tab-hymn" class="tab-content">
+
+    <!-- AI 도우미 -->
+    <div class="card" style="border-left: 4px solid var(--accent);">
+      <div class="card-title" style="color: var(--accent);">AI 도우미 - 빈칸 자동 채우기</div>
+
+      <div class="info-box">
+        <strong>사용법:</strong> 찬송가 번호와 제목만 입력 → 프롬프트 생성 → ChatGPT/Claude에 붙여넣기 → 응답을 아래에 붙여넣기 → 적용
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>찬송가 번호 *</label>
+          <input type="number" id="ai-num" placeholder="예: 338" min="1" max="645">
+        </div>
+        <div class="form-group">
+          <label>찬송가 제목 (한국어) *</label>
+          <input type="text" id="ai-title" placeholder="예: 내 주를 가까이 하게 함은">
+        </div>
+      </div>
+
+      <button class="btn-generate" style="background: var(--accent2); margin-bottom: 16px;" onclick="generatePrompt()">1단계: LLM 프롬프트 생성</button>
+
+      <div id="ai-prompt-area" style="display:none;">
+        <div class="output-card accent" style="margin-bottom: 14px;">
+          <div class="output-label">
+            <span>LLM에 붙여넣을 프롬프트</span>
+            <button class="btn-copy" onclick="copyField('ai-prompt-text')">복사</button>
+          </div>
+          <div class="output-text" id="ai-prompt-text" style="max-height: 200px;"></div>
+        </div>
+
+        <div class="form-group">
+          <label>2단계: LLM 응답을 여기에 붙여넣기</label>
+          <div class="hint">ChatGPT나 Claude의 응답을 그대로 복사해서 붙여넣으세요. JSON 형식의 응답이 자동 인식됩니다.</div>
+          <textarea id="ai-response" rows="8" placeholder='LLM의 응답을 여기에 붙여넣으세요.&#10;&#10;예시:&#10;{&#10;  "english_title": "Nearer My God to Thee",&#10;  "intro": "1856년 사라 애덤스가...",&#10;  ...&#10;}'></textarea>
+        </div>
+
+        <button class="btn-generate" style="background: var(--success);" onclick="applyAIResponse()">3단계: 아래 폼에 자동 적용</button>
+
+        <div id="ai-error" style="display:none; color: var(--accent); font-size: 13px; margin-top: 10px; padding: 10px; background: #fef0f3; border-radius: 8px;"></div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-title">찬송가 단독 곡 정보 입력</div>
 
@@ -553,6 +596,134 @@ function seasonTagsEn(seasons) {
   let tags = [];
   seasons.forEach(s => { if (map[s]) tags.push(...map[s]); });
   return [...new Set(tags)];
+}
+
+// ===== AI Helper: Prompt Generation =====
+function generatePrompt() {
+  const num = document.getElementById('ai-num').value.trim();
+  const title = document.getElementById('ai-title').value.trim();
+
+  if (!num || !title) {
+    alert('찬송가 번호와 제목을 입력해주세요.');
+    return;
+  }
+
+  const prompt = `한국 새찬송가 ${num}장 "${title}"에 대한 정보를 아래 JSON 형식으로 정확히 작성해주세요.
+
+반드시 아래 JSON 형식만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.
+
+{
+  "english_title": "이 찬송가의 영어 원제목 (없으면 빈 문자열)",
+  "intro": "이 찬송가의 작곡/작사 배경을 1-2문장으로 작성 (작사가, 작곡가, 연도, 배경 이야기 포함)",
+  "lyrics": "이 찬송가의 한국어 가사 전체 (1절부터 마지막 절까지, 절 구분은 줄바꿈으로)",
+  "seasons": ["관련 절기를 배열로 작성. 가능한 값: 사순절, 고난주간, 부활절, 성탄절, 추수감사절, 종려주일, 신년. 해당 없으면 빈 배열 []"],
+  "usage": "이 찬송가에 가장 적합한 용도 하나만 작성. 가능한 값: 묵상, 기도, 예배, 수면, 없음"
+}
+
+규칙:
+- JSON 외에 설명, 인사말, 마크다운 코드블록(\`\`\`) 등을 절대 포함하지 마세요
+- english_title은 원래 영어로 된 찬송가가 아니면 빈 문자열로 하세요
+- lyrics는 실제 새찬송가에 수록된 한국어 가사를 정확히 작성하세요
+- seasons는 해당 절기가 없으면 빈 배열 []로 하세요
+- usage는 위 5개 값 중 하나만 작성하세요`;
+
+  document.getElementById('ai-prompt-text').textContent = prompt;
+  document.getElementById('ai-prompt-area').style.display = 'block';
+  document.getElementById('ai-error').style.display = 'none';
+  document.getElementById('ai-response').value = '';
+
+  // Also fill the main form's num and title
+  document.getElementById('h-num').value = num;
+  document.getElementById('h-title-kr').value = title;
+
+  setTimeout(() => {
+    document.getElementById('ai-prompt-area').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ===== AI Helper: Apply Response =====
+function applyAIResponse() {
+  const raw = document.getElementById('ai-response').value.trim();
+  const errorEl = document.getElementById('ai-error');
+
+  if (!raw) {
+    errorEl.textContent = 'LLM 응답을 붙여넣어 주세요.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  let data;
+  try {
+    // Try to extract JSON from the response (handle markdown code blocks, extra text, etc.)
+    let jsonStr = raw;
+
+    // Remove markdown code blocks if present
+    const codeBlockMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (codeBlockMatch) {
+      jsonStr = codeBlockMatch[1].trim();
+    }
+
+    // Try to find JSON object in the text
+    const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      jsonStr = jsonMatch[0];
+    }
+
+    data = JSON.parse(jsonStr);
+  } catch (e) {
+    errorEl.innerHTML = '<strong>JSON 파싱 오류:</strong> LLM의 응답이 올바른 JSON 형식이 아닙니다.<br>LLM에게 다시 "JSON 형식만 응답해주세요"라고 요청해보세요.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  // Validate required fields exist
+  const requiredFields = ['english_title', 'intro', 'lyrics', 'seasons', 'usage'];
+  const missing = requiredFields.filter(f => !(f in data));
+  if (missing.length > 0) {
+    errorEl.innerHTML = `<strong>누락된 필드:</strong> ${missing.join(', ')}<br>LLM에게 다시 요청해주세요.`;
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  // Apply to form fields
+  // English title
+  if (data.english_title && typeof data.english_title === 'string') {
+    document.getElementById('h-title-en').value = data.english_title;
+  }
+
+  // Intro
+  if (data.intro && typeof data.intro === 'string') {
+    document.getElementById('h-intro').value = data.intro;
+  }
+
+  // Lyrics
+  if (data.lyrics && typeof data.lyrics === 'string') {
+    document.getElementById('h-lyrics').value = data.lyrics;
+  }
+
+  // Seasons - check/uncheck checkboxes
+  const seasonCheckboxes = document.querySelectorAll('input[name="h-season"]');
+  seasonCheckboxes.forEach(cb => { cb.checked = false; });
+  if (Array.isArray(data.seasons)) {
+    data.seasons.forEach(season => {
+      const cb = document.querySelector(`input[name="h-season"][value="${season}"]`);
+      if (cb) cb.checked = true;
+    });
+  }
+
+  // Usage
+  const usageMap = { '묵상': '묵상', '기도': '기도', '예배': '예배', '수면': '수면', '없음': '' };
+  const usageVal = usageMap[data.usage] !== undefined ? usageMap[data.usage] : '';
+  document.getElementById('h-usage').value = usageVal;
+
+  // Hide error, show success
+  errorEl.style.display = 'none';
+  showToast();
+
+  // Scroll to the filled form
+  setTimeout(() => {
+    document.getElementById('h-title-en').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 300);
 }
 
 function seasonLabel(seasons) {
