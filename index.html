@@ -1027,22 +1027,9 @@ function applyPlaylistAI() {
     errorEl.style.display = 'block'; return;
   }
 
-  // 타임스탬프 + 곡명 + 영어제목 결합하여 수록곡 목록 생성
-  const duration = document.getElementById('ai-p-duration').value;
-  const totalMinutes = duration === '30분' ? 30 : duration === '1시간' ? 60 : duration === '2시간' ? 120 : 180;
-  const interval = Math.floor(totalMinutes / data.songs.length);
-
+  // 곡명 + 영어제목 결합하여 수록곡 목록 생성 (타임스탬프는 모두 00:00)
   const songListText = data.songs.map((s, i) => {
-    const mins = i * interval;
-    const hh = Math.floor(mins / 60);
-    const mm = mins % 60;
-    let time;
-    if (totalMinutes >= 60) {
-      time = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:00`;
-    } else {
-      time = `${String(mm).padStart(2,'0')}:00`;
-    }
-    let line = `${time} 찬송가 ${s.number}장 ${s.title}`;
+    let line = `00:00 찬송가 ${s.number}장 ${s.title}`;
     if (s.english) line += ` (${s.english})`;
     return line;
   }).join('\n');
