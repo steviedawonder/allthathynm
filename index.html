@@ -605,7 +605,7 @@
         </select>
       </div>
 
-      <button class="btn-generate" onclick="generateShorts()">Shorts 제목 생성</button>
+      <button class="btn-generate" onclick="generateShorts()">Shorts 메타데이터 생성</button>
     </div>
   </div>
 
@@ -645,7 +645,7 @@
 
     <div id="out-hashtags" class="output-card">
       <div class="output-label">
-        <span>해시태그 (설명 하단용)</span>
+        <span>해시태그</span>
         <button class="btn-copy" onclick="copyField('out-hashtags-text')">복사</button>
       </div>
       <div class="output-text" id="out-hashtags-text"></div>
@@ -1130,7 +1130,6 @@ function applyPlaylistAI() {
   }).join('\n');
 
   document.getElementById('p-songs').value = songListText;
-  document.getElementById('p-duration').value = duration;
 
   errorEl.style.display = 'none';
   showToast();
@@ -1447,7 +1446,7 @@ function generatePlaylist() {
     tagList.push(seasons[0]);
     tagList.push(...seasonTagsKr(seasons), ...seasonTagsEn(seasons));
   }
-  let tags = [...new Set(tagList)].slice(0, 20).join(', ');
+  let tags = [...new Set(tagList)].slice(0, 15).join(', ');
 
   let hashtags = descHash.slice(0, 5).join(' ');
 
