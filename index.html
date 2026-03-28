@@ -758,24 +758,31 @@ function generatePrompt() {
     return;
   }
 
-  const prompt = `한국 새찬송가 ${num}장 "${title}"에 대한 정보를 아래 JSON 형식으로 정확히 작성해주세요.
+  const prompt = `당신은 한국 개신교 찬송가 전문가입니다. 한국 새찬송가(2006년 개편) ${num}장 "${title}"에 대한 정보를 아래 JSON 형식으로 작성해주세요.
+
+⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
+- 모르는 항목은 빈 문자열("")로 남겨두세요.
+- 추측이나 유사한 다른 곡의 정보를 섞지 마세요.
+- 특히 작사가/작곡가/연도는 확실한 경우에만 기재하세요.
 
 반드시 아래 JSON 형식만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.
 
 {
-  "english_title": "이 찬송가의 영어 원제목 (없으면 빈 문자열)",
-  "intro": "이 찬송가의 작곡/작사 배경을 1-2문장으로 작성 (작사가, 작곡가, 연도, 배경 이야기 포함)",
-  "lyrics": "이 찬송가의 한국어 가사 전체 (1절부터 마지막 절까지, 절 구분은 줄바꿈으로)",
-  "seasons": ["관련 절기를 배열로 작성. 가능한 값: 사순절, 고난주간, 부활절, 성탄절, 추수감사절, 종려주일, 신년. 해당 없으면 빈 배열 []"],
-  "usage": "이 찬송가에 가장 적합한 용도 하나만 작성. 가능한 값: 묵상, 기도, 예배, 수면, 없음"
+  "english_title": "영어 원제목 (확실한 경우만. 모르면 빈 문자열)",
+  "intro": "작곡/작사 배경 1-2문장 (확실한 정보만 포함. 작사가, 작곡가, 연도 등. 불확실하면 빈 문자열)",
+  "lyrics": "한국어 가사 전체 (1절~마지막 절, 후렴 포함, 절 구분은 빈 줄로. 저작권으로 제공 불가시 빈 문자열)",
+  "seasons": ["절기 배열. 가능한 값: 사순절, 고난주간, 부활절, 성탄절, 추수감사절, 종려주일, 신년. 해당 없으면 빈 배열 []"],
+  "usage": "적합한 용도 하나. 가능한 값: 묵상, 기도, 예배, 수면, 없음"
 }
 
 규칙:
 - JSON 외에 설명, 인사말, 마크다운 코드블록(\`\`\`) 등을 절대 포함하지 마세요
-- english_title은 원래 영어로 된 찬송가가 아니면 빈 문자열로 하세요
-- lyrics는 실제 새찬송가에 수록된 한국어 가사를 정확히 작성하세요
-- seasons는 해당 절기가 없으면 빈 배열 []로 하세요
-- usage는 위 5개 값 중 하나만 작성하세요`;
+- english_title: 이 찬송가가 영어권에서 작곡된 번역 찬송가인 경우에만 영어 원제를 작성하세요. 한국 창작 찬송가이면 빈 문자열로 하세요. 확실하지 않으면 빈 문자열로 하세요.
+- intro: 검증된 사실만 작성하세요. "~로 알려져 있다", "~로 추정된다" 같은 불확실한 표현은 사용하지 마세요. 확실하지 않으면 빈 문자열로 두세요.
+- lyrics: 새찬송가(2006) 공식 수록 가사를 정확히 작성하세요. 저작권 정책으로 가사 제공이 불가능한 경우 빈 문자열("")로 응답하세요. 절대로 가사를 창작하거나 기억에 의존해 부정확한 가사를 작성하지 마세요.
+- seasons: 새찬송가 목차에서 해당 곡이 분류된 절기를 기준으로 하세요. 해당 없으면 빈 배열 []
+- usage: 위 5개 값 중 하나만 작성하세요
+- 새찬송가 ${num}장이 "${title}"이 맞는지 확인하세요. 번호와 제목이 일치하지 않으면 {"error": "찬송가 ${num}장의 제목이 '${title}'과 일치하지 않습니다."} 형태로 응답하세요.`;
 
   document.getElementById('ai-prompt-text').textContent = prompt;
   document.getElementById('ai-prompt-area').style.display = 'block';
@@ -822,6 +829,13 @@ function applyAIResponse() {
     data = JSON.parse(jsonStr);
   } catch (e) {
     errorEl.innerHTML = '<strong>JSON 파싱 오류:</strong> LLM의 응답이 올바른 JSON 형식이 아닙니다.<br>LLM에게 다시 "JSON 형식만 응답해주세요"라고 요청해보세요.';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  // Check for error response (e.g. hymn number/title mismatch)
+  if (data.error) {
+    errorEl.innerHTML = `<strong>AI 오류:</strong> ${data.error}`;
     errorEl.style.display = 'block';
     return;
   }
@@ -881,22 +895,29 @@ function generateGospelPrompt() {
   const title = document.getElementById('ai-g-title').value.trim();
   if (!title) { alert('곡 제목을 입력해주세요.'); return; }
 
-  const prompt = `한국 복음성가/CCM "${title}"에 대한 정보를 아래 JSON 형식으로 정확히 작성해주세요.
+  const prompt = `당신은 한국 기독교 음악(복음성가/CCM) 전문가입니다. "${title}"에 대한 정보를 아래 JSON 형식으로 작성해주세요.
+
+⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
+- 모르는 항목은 빈 문자열("")로 남겨두세요.
+- 추측이나 유사한 다른 곡의 정보를 섞지 마세요.
+- 동명의 다른 곡과 혼동하지 마세요. "${title}"이라는 제목의 한국 복음성가/CCM이 여러 곡 존재할 수 있으니, 가장 널리 알려진 곡을 기준으로 하세요.
 
 반드시 아래 JSON 형식만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.
 
 {
-  "english_title": "이 곡의 영어 제목 (없으면 빈 문자열)",
-  "category": "이 곡의 카테고리. 가능한 값: 복음성가, CCM, 찬양, 축복송 (하나만 선택)",
-  "intro": "이 곡의 작곡/작사 배경을 1-2문장으로 작성 (작사가, 작곡가, 연도 포함)",
-  "lyrics": "이 곡의 한국어 가사 전체 (1절부터 마지막 절까지, 절 구분은 줄바꿈으로)"
+  "english_title": "영어 제목 (확실한 경우만. 모르면 빈 문자열)",
+  "category": "카테고리. 가능한 값: 복음성가, CCM, 찬양, 축복송 (하나만 선택)",
+  "intro": "작곡/작사 배경 1-2문장 (확실한 정보만. 작사가, 작곡가, 연도 등. 불확실하면 빈 문자열)",
+  "lyrics": "한국어 가사 전체 (1절~마지막 절, 후렴 포함, 절 구분은 빈 줄로. 저작권으로 제공 불가시 빈 문자열)"
 }
 
 규칙:
 - JSON 외에 설명, 인사말, 마크다운 코드블록(\`\`\`) 등을 절대 포함하지 마세요
-- english_title은 영어 원제가 없으면 빈 문자열로 하세요
-- category는 위 4개 값 중 하나만 작성하세요
-- lyrics는 실제 가사를 정확히 작성하세요`;
+- english_title: 영어 원제가 확실히 존재하는 경우만 작성. 모르면 빈 문자열
+- category: 위 4개 값 중 하나만 작성하세요
+- intro: 검증된 사실만 작성하세요. 작사가/작곡가/연도가 불확실하면 빈 문자열로 두세요. 절대로 추측하지 마세요.
+- lyrics: 공식 발표된 가사를 정확히 작성하세요. 저작권 정책으로 가사 제공이 불가능한 경우 빈 문자열("")로 응답하세요. 절대로 가사를 창작하거나 기억에 의존해 부정확한 가사를 작성하지 마세요.
+- 이 곡이 실존하는 곡인지 확인하세요. 존재 여부가 불확실하면 {"error": "'${title}'에 대한 확인된 정보를 찾을 수 없습니다."} 형태로 응답하세요.`;
 
   document.getElementById('ai-g-prompt-text').textContent = prompt;
   document.getElementById('ai-g-prompt-area').style.display = 'block';
@@ -922,6 +943,13 @@ function applyGospelAI() {
   } catch (e) {
     errorEl.innerHTML = '<strong>JSON 파싱 오류:</strong> LLM에게 다시 "JSON 형식만 응답해주세요"라고 요청해보세요.';
     errorEl.style.display = 'block'; return;
+  }
+
+  // Check for error response
+  if (data.error) {
+    errorEl.innerHTML = `<strong>AI 오류:</strong> ${data.error}`;
+    errorEl.style.display = 'block';
+    return;
   }
 
   if (data.english_title) document.getElementById('g-title-en').value = data.english_title;
@@ -978,15 +1006,20 @@ function generatePlaylistPrompt() {
 
   const songList = playlistSongs.map((s, i) => `${i + 1}. 찬송가 ${s.number}장 "${s.title}"`).join('\n');
 
-  const prompt = `아래 한국 새찬송가 곡들의 영어 원제목을 알려주세요.
+  const prompt = `당신은 한국 새찬송가(2006년 개편) 전문가입니다. 아래 곡들의 영어 원제목을 알려주세요.
 
 ${songList}
+
+⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
+- 영어 원제가 확실한 곡만 작성하고, 불확실하면 빈 문자열로 두세요.
+- 한국 창작 찬송가(영어 원곡이 없는 곡)는 반드시 빈 문자열로 하세요.
+- 번호와 제목이 실제 새찬송가와 일치하는지 확인하세요.
 
 반드시 아래 JSON 형식만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.
 
 {
   "songs": [
-    {"number": ${playlistSongs[0].number}, "title": "${playlistSongs[0].title}", "english": "영어 원제목"},
+    {"number": ${playlistSongs[0].number}, "title": "${playlistSongs[0].title}", "english": "영어 원제목 (확실한 경우만. 모르면 빈 문자열)"},
     ...
   ]
 }
@@ -995,7 +1028,7 @@ ${songList}
 - JSON 외에 설명, 인사말, 마크다운 코드블록(\`\`\`) 등을 절대 포함하지 마세요
 - songs 배열에 위 곡들을 순서대로 모두 넣으세요
 - number와 title은 위에 적힌 값을 그대로 사용하세요
-- english는 영어 원제가 있는 곡만 작성하고, 없으면 빈 문자열로 하세요`;
+- english: 해당 찬송가가 영어권에서 작곡되어 번역된 곡인 경우에만 영어 원제를 작성하세요. 한국 창작 찬송가이거나 원제가 불확실하면 빈 문자열("")로 하세요. 절대로 영어 제목을 추측하거나 번역해서 만들지 마세요.`;
 
   document.getElementById('ai-p-prompt-text').textContent = prompt;
   document.getElementById('ai-p-prompt-area').style.display = 'block';
@@ -1054,19 +1087,24 @@ function generateShortsPrompt() {
   const isHymn = num ? true : false;
   const songDesc = isHymn ? `한국 새찬송가 ${num}장 "${title}"` : `"${title}"`;
 
-  const prompt = `${songDesc}에 대한 정보를 아래 JSON 형식으로 정확히 작성해주세요.
+  const prompt = `당신은 한국 기독교 찬송가/복음성가 전문가입니다. ${songDesc}에 대한 정보를 아래 JSON 형식으로 작성해주세요.
+
+⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
+- 모르는 항목은 빈 문자열("") 또는 "없음"으로 남겨두세요.
+- 추측하거나 유사한 다른 곡의 정보를 섞지 마세요.
 
 반드시 아래 JSON 형식만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.
 
 {
-  "english_title": "이 곡의 영어 제목 (없으면 빈 문자열)",
-  "season": "관련 절기 하나만 작성. 가능한 값: 사순절, 부활절, 성탄절, 고난주간, 종려주일, 없음"
+  "english_title": "영어 제목 (확실한 경우만. 모르면 빈 문자열)",
+  "season": "관련 절기 하나만. 가능한 값: 사순절, 부활절, 성탄절, 고난주간, 종려주일, 없음"
 }
 
 규칙:
 - JSON 외에 설명, 인사말, 마크다운 코드블록(\`\`\`) 등을 절대 포함하지 마세요
-- english_title은 영어 원제가 없으면 빈 문자열로 하세요
-- season은 해당 절기가 없으면 "없음"으로 작성하세요`;
+- english_title: 영어권에서 작곡된 번역곡인 경우에만 영어 원제를 작성하세요. 한국 창작곡이거나 불확실하면 빈 문자열로 하세요. 절대로 제목을 번역해서 만들지 마세요.
+- season: 해당 곡이 특정 절기와 직접적으로 관련된 경우에만 작성하세요. 불확실하면 "없음"으로 하세요.
+- 이 곡이 실존하는지 확인하세요. 존재 여부가 불확실하면 {"error": "확인된 정보를 찾을 수 없습니다."} 형태로 응답하세요.`;
 
   document.getElementById('ai-s-prompt-text').textContent = prompt;
   document.getElementById('ai-s-prompt-area').style.display = 'block';
@@ -1093,6 +1131,13 @@ function applyShortsAI() {
   } catch (e) {
     errorEl.innerHTML = '<strong>JSON 파싱 오류:</strong> LLM에게 다시 "JSON 형식만 응답해주세요"라고 요청해보세요.';
     errorEl.style.display = 'block'; return;
+  }
+
+  // Check for error response
+  if (data.error) {
+    errorEl.innerHTML = `<strong>AI 오류:</strong> ${data.error}`;
+    errorEl.style.display = 'block';
+    return;
   }
 
   if (data.english_title) document.getElementById('s-title-en').value = data.english_title;
