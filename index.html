@@ -1257,12 +1257,10 @@ function generateHymn() {
   if (en) title += ` - ${en}`;
   if (lyrics) title += ' (가사포함)';
 
-  // === SHORTS TITLE (#shorts 제거) ===
+  // === SHORTS TITLE (해시태그 1개) ===
   let shortsTitle = `찬송가 ${num}장 ${kr}`;
   if (en) shortsTitle += ` - ${en}`;
   shortsTitle += ` #찬송가`;
-  if (seasons.length > 0) shortsTitle += ` #${seasons[0]}`;
-  shortsTitle += ' #찬양';
 
   // === DESCRIPTION (첫 2줄에 검색 의도 + 클릭 유도) ===
   let hookLine = aiSearchHook || `찬송가 편곡, 예배 음악, ${usage ? usage + '에 좋은 ' : ''}찬양`;
@@ -1340,8 +1338,8 @@ function generateGospel() {
   if (en) title += ` - ${en}`;
   if (lyrics) title += ' (가사포함)';
 
-  // === SHORTS TITLE (#shorts 제거) ===
-  let shortsTitle = `${kr} - ${category} 편곡 #${category} #찬양 #예배음악`;
+  // === SHORTS TITLE (해시태그 1개) ===
+  let shortsTitle = `${kr} - ${category} 편곡 #${category}`;
 
   // === DESCRIPTION ===
   let hookLine = aiSearchHook || `${category}, 찬양, 예배 음악`;
@@ -1434,7 +1432,7 @@ function generatePlaylist() {
   if (seasons.length > 0) descHash.push(`#${seasons[0]}`);
   desc += descHash.slice(0, 5).join(' ');
 
-  // === TAGS (15~20개: 고정 + 테마/용도 확장) ===
+  // === TAGS (최대 15개: 고정 + 테마/용도 확장) ===
   let tagList = [
     '찬송가 모음', theme, '중간광고없음',
     '예배 음악', 'hymn playlist', 'worship music', 'ALL THAT HYMN',
