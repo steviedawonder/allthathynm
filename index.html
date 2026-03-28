@@ -650,6 +650,22 @@
       </div>
       <div class="output-text" id="out-hashtags-text"></div>
     </div>
+
+    <div id="out-timestamps" class="output-card">
+      <div class="output-label">
+        <span>타임스탬프 (시간 직접 수정)</span>
+        <button class="btn-copy" onclick="copyField('out-timestamps-text')">복사</button>
+      </div>
+      <div class="output-text" id="out-timestamps-text"></div>
+    </div>
+
+    <div id="out-pinned" class="output-card">
+      <div class="output-label">
+        <span>고정댓글</span>
+        <button class="btn-copy" onclick="copyField('out-pinned-text')">복사</button>
+      </div>
+      <div class="output-text" id="out-pinned-text"></div>
+    </div>
   </div>
 </div>
 
@@ -699,15 +715,23 @@ function showOutput() {
   }, 100);
 }
 
-function setOutput(title, shortsTitle, desc, tags, hashtags) {
+function setOutput(title, shortsTitle, desc, tags, hashtags, timestamps, pinned) {
   document.getElementById('out-title-text').textContent = title;
   document.getElementById('out-shorts-text').textContent = shortsTitle;
   document.getElementById('out-desc-text').textContent = desc;
   document.getElementById('out-tags-text').textContent = tags;
   document.getElementById('out-hashtags-text').textContent = hashtags;
+  document.getElementById('out-timestamps-text').textContent = timestamps || '';
+  document.getElementById('out-pinned-text').textContent = pinned || '';
 
-  // Show/hide shorts title based on content
+  // Show/hide based on content
+  document.getElementById('out-title').style.display = title ? 'block' : 'none';
   document.getElementById('out-shorts-title').style.display = shortsTitle ? 'block' : 'none';
+  document.getElementById('out-desc').style.display = desc ? 'block' : 'none';
+  document.getElementById('out-tags').style.display = tags ? 'block' : 'none';
+  document.getElementById('out-hashtags').style.display = hashtags ? 'block' : 'none';
+  document.getElementById('out-timestamps').style.display = timestamps ? 'block' : 'none';
+  document.getElementById('out-pinned').style.display = pinned ? 'block' : 'none';
 
   showOutput();
 }
@@ -758,7 +782,7 @@ function generatePrompt() {
     return;
   }
 
-  const prompt = `당신은 한국 개신교 찬송가 전문가입니다. 한국 새찬송가(2006년 개편) ${num}장 "${title}"에 대한 정보를 아래 JSON 형식으로 작성해주세요.
+  const prompt = `당신은 한국 개신교 찬송가 전문가이자 YouTube SEO 전문가입니다. 한국 새찬송가(2006년 개편) ${num}장 "${title}"에 대한 정보를 아래 JSON 형식으로 작성해주세요.
 
 ⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
 - 모르는 항목은 빈 문자열("")로 남겨두세요.
@@ -766,25 +790,32 @@ function generatePrompt() {
 
 📌 정보 출처:
 1. 가사(lyrics): 반드시 한국찬송가공회 사이트(https://hymnkorea.org/50)에서 ${num}장을 검색하여 확인하세요. 이 사이트의 가사만 사용하세요. 확인 불가시 빈 문자열.
-2. 작사가/작곡가/영어 원제/연도(intro, english_title): 웹 검색으로 "새찬송가 ${num}장" 정보를 확인하세요. 확인되지 않은 정보는 포함하지 마세요. 틀린 정보보다 빈 정보가 낫습니다.
+2. 작사가/작곡가/영어 원제/연도(intro, english_title): 웹 검색으로 "새찬송가 ${num}장" 정보를 확인하세요. 확인되지 않은 정보는 포함하지 마세요.
 
 반드시 아래 JSON 형식만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.
 
 {
   "english_title": "영어 원제목 (웹 검색으로 확인한 경우만. 모르면 빈 문자열)",
-  "intro": "작곡/작사 배경 1-2문장 (웹 검색으로 확인한 작사가, 작곡가, 연도 포함. 불확실하면 빈 문자열)",
+  "intro": "작곡/작사 배경 1-2문장 (확인된 작사가, 작곡가, 연도 포함. 불확실하면 빈 문자열)",
   "lyrics": "한국어 가사 전체 (반드시 hymnkorea.org에서 확인한 가사만. 확인 불가시 빈 문자열)",
   "seasons": ["절기 배열. 가능한 값: 사순절, 고난주간, 부활절, 성탄절, 추수감사절, 종려주일, 신년. 해당 없으면 빈 배열 []"],
-  "usage": "적합한 용도 하나. 가능한 값: 묵상, 기도, 예배, 수면, 없음"
+  "usage": "적합한 용도 하나. 가능한 값: 묵상, 기도, 예배, 수면, 없음",
+  "tags_kr": ["이 찬송가에 맞는 한국어 YouTube 검색 태그 10개. 예: 찬송가 피아노, 어쿠스틱 찬양, 묵상 음악, 기도 음악, 예배 BGM, 잔잔한 찬송가 등 사람들이 실제로 검색할 키워드"],
+  "tags_en": ["영어 YouTube 검색 태그 5개. 예: acoustic hymn, worship music, Korean hymn, prayer music, church music 등"],
+  "search_hook": "YouTube 검색 유입을 위한 한 문장. 사람들이 이 찬송가를 찾을 때 쓸 표현 (예: '고난주간에 듣기 좋은 찬송가', '새벽기도 묵상 찬양')",
+  "click_title": "사람들이 클릭하고 싶게 만드는 감성적 부제 15자 이내 (예: '십자가 앞에 무릎 꿇게 되는 찬양', '눈물 없이 못 듣는 어쿠스틱 편곡', '마음이 고요해지는 찬양')",
+  "timestamps": ["이 찬송가의 구간 이름을 순서대로. 예: 전주, 1절, 간주, 2절, 3절, 후주. 가사 절 수에 맞게 작성"],
+  "pinned_comment": "YouTube 고정댓글용 감성 문구 1-2문장. 이 찬송가의 핵심 메시지를 담아 공감을 이끌어내는 문장 (예: '겟세마네에서 홀로 기도하신 주님을 묵상하며, 우리의 고난도 주님께 맡깁니다.')"
 }
 
 규칙:
 - JSON 외에 설명, 인사말, 마크다운 코드블록(\`\`\`) 등을 절대 포함하지 마세요
 - english_title: 웹 검색으로 확인된 영어 원제만 작성. 한국 창작 찬송가이거나 확인 불가시 빈 문자열. 절대로 제목을 번역해서 만들지 마세요.
-- intro: 웹 검색으로 확인한 작사가, 작곡가, 연도만 포함. 확인되지 않은 정보는 절대 포함하지 마세요. 확인 불가시 빈 문자열.
-- lyrics: 반드시 한국찬송가공회(hymnkorea.org/50)에서 제공하는 공식 가사만 사용하세요. 이 사이트 외의 출처에서 가져오지 마세요. 절대로 가사를 창작하거나 기억에 의존하지 마세요.
-- seasons: 새찬송가 목차 분류 기준. 해당 없으면 빈 배열 []
-- usage: 위 5개 값 중 하나만 작성하세요
+- intro: 확인된 작사가, 작곡가, 연도만 포함. 확인 불가시 빈 문자열.
+- lyrics: 반드시 한국찬송가공회(hymnkorea.org/50)에서 제공하는 공식 가사만 사용하세요. 절대로 가사를 창작하거나 기억에 의존하지 마세요.
+- tags_kr/tags_en: 사람들이 YouTube에서 실제로 검색할 키워드를 작성하세요. 너무 일반적이거나 너무 특수한 태그는 피하세요.
+- click_title: 과장하지 말고, 이 찬송가의 분위기에 맞는 자연스럽고 감성적인 표현을 사용하세요.
+- timestamps: 가사 절 수에 맞게 전주, 1절, 간주, 2절 등으로 작성하세요.
 - 새찬송가 ${num}장이 "${title}"이 맞는지 확인하세요. 번호와 제목이 일치하지 않으면 {"error": "찬송가 ${num}장의 제목이 '${title}'과 일치하지 않습니다."} 형태로 응답하세요.`;
 
   document.getElementById('ai-prompt-text').textContent = prompt;
@@ -883,6 +914,15 @@ function applyAIResponse() {
   const usageVal = usageMap[data.usage] !== undefined ? usageMap[data.usage] : '';
   document.getElementById('h-usage').value = usageVal;
 
+  // Store AI-generated SEO fields in dataset
+  const form = document.getElementById('tab-hymn');
+  form.dataset.aiTagsKr = JSON.stringify(data.tags_kr || []);
+  form.dataset.aiTagsEn = JSON.stringify(data.tags_en || []);
+  form.dataset.aiSearchHook = data.search_hook || '';
+  form.dataset.aiClickTitle = data.click_title || '';
+  form.dataset.aiTimestamps = JSON.stringify(data.timestamps || []);
+  form.dataset.aiPinned = data.pinned_comment || '';
+
   // Hide error, show success
   errorEl.style.display = 'none';
   showToast();
@@ -898,17 +938,15 @@ function generateGospelPrompt() {
   const title = document.getElementById('ai-g-title').value.trim();
   if (!title) { alert('곡 제목을 입력해주세요.'); return; }
 
-  const prompt = `당신은 한국 기독교 음악(복음성가/CCM) 전문가입니다. "${title}"에 대한 정보를 아래 JSON 형식으로 작성해주세요.
+  const prompt = `당신은 한국 기독교 음악(복음성가/CCM) 전문가이자 YouTube SEO 전문가입니다. "${title}"에 대한 정보를 아래 JSON 형식으로 작성해주세요.
 
 ⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
 - 모르는 항목은 빈 문자열("")로 남겨두세요.
-- 추측이나 유사한 다른 곡의 정보를 섞지 마세요.
-- 동명의 다른 곡과 혼동하지 마세요. "${title}"이라는 제목의 한국 복음성가/CCM이 여러 곡 존재할 수 있으니, 가장 널리 알려진 곡을 기준으로 하세요.
+- 동명의 다른 곡과 혼동하지 마세요. 가장 널리 알려진 곡을 기준으로 하세요.
 
 📌 검증 방법:
-- 가사(lyrics): 공식 발표된 원본 가사만 사용하세요. 웹 검색으로 가사를 확인하고, 확인 불가시 빈 문자열(""). 기억에 의존하거나 창작하지 마세요.
-- 작사가/작곡가(intro): 해당 곡의 공식 앨범 정보, 음원 사이트(멜론, 벅스 등), 또는 출판사 정보에서 확인하세요. 확인되지 않은 정보는 포함하지 마세요.
-- 확신도가 낮은 정보는 빈 문자열("")로 두세요. 틀린 정보보다 빈 정보가 낫습니다.
+- 가사(lyrics): 웹 검색으로 확인된 공식 가사만 사용하세요. 확인 불가시 빈 문자열.
+- 작사가/작곡가(intro): 음원 사이트(멜론, 벅스 등) 또는 출판사 정보에서 확인하세요.
 
 반드시 아래 JSON 형식만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.
 
@@ -916,16 +954,23 @@ function generateGospelPrompt() {
   "english_title": "영어 제목 (확실한 경우만. 모르면 빈 문자열)",
   "category": "카테고리. 가능한 값: 복음성가, CCM, 찬양, 축복송 (하나만 선택)",
   "intro": "작곡/작사 배경 1-2문장 (검증된 정보만. 불확실하면 빈 문자열)",
-  "lyrics": "한국어 가사 전체 (검증된 원본 가사만. 확인 불가시 빈 문자열)"
+  "lyrics": "한국어 가사 전체 (검증된 원본 가사만. 확인 불가시 빈 문자열)",
+  "tags_kr": ["이 곡에 맞는 한국어 YouTube 검색 태그 10개. 예: 복음성가 피아노, CCM 편곡, 잔잔한 찬양, 예배 음악, 기도 음악 등"],
+  "tags_en": ["영어 YouTube 검색 태그 5개. 예: Korean worship, CCM cover, gospel music, acoustic worship 등"],
+  "search_hook": "YouTube 검색 유입을 위한 한 문장 (예: '예배 전 듣기 좋은 잔잔한 CCM', '기도할 때 흘려듣기 좋은 찬양')",
+  "click_title": "사람들이 클릭하고 싶게 만드는 감성적 부제 15자 이내 (예: '마음이 녹아내리는 찬양', '예배 시작 전 꼭 듣는 곡')",
+  "timestamps": ["이 곡의 구간 이름을 순서대로. 예: 전주, 1절, 후렴, 간주, 2절, 후렴, 후주"],
+  "pinned_comment": "YouTube 고정댓글용 감성 문구 1-2문장. 곡의 핵심 메시지를 담아 공감을 이끌어내는 문장"
 }
 
 규칙:
 - JSON 외에 설명, 인사말, 마크다운 코드블록(\`\`\`) 등을 절대 포함하지 마세요
-- english_title: 영어 원제가 확실히 존재하는 경우만 작성. 모르면 빈 문자열
+- english_title: 확실한 경우만 작성. 모르면 빈 문자열
 - category: 위 4개 값 중 하나만 작성하세요
-- intro: 검증된 사실만 작성하세요. 작사가/작곡가/연도가 불확실하면 빈 문자열로 두세요. 절대로 추측하지 마세요.
-- lyrics: 웹 검색으로 확인된 공식 가사만 작성하세요. 한 글자라도 확실하지 않으면 빈 문자열("")로 응답하세요. 절대로 가사를 창작하거나 기억에 의존해 부정확한 가사를 작성하지 마세요.
-- 이 곡이 실존하는 곡인지 웹 검색으로 확인하세요. 존재 여부가 불확실하면 {"error": "'${title}'에 대한 확인된 정보를 찾을 수 없습니다."} 형태로 응답하세요.`;
+- intro: 검증된 사실만. 불확실하면 빈 문자열.
+- lyrics: 웹 검색으로 확인된 가사만. 절대로 창작하지 마세요.
+- click_title: 과장하지 말고 곡 분위기에 맞는 자연스러운 표현으로.
+- 이 곡이 실존하는지 웹 검색으로 확인하세요. 불확실하면 {"error": "'${title}'에 대한 확인된 정보를 찾을 수 없습니다."} 형태로 응답하세요.`;
 
   document.getElementById('ai-g-prompt-text').textContent = prompt;
   document.getElementById('ai-g-prompt-area').style.display = 'block';
@@ -967,6 +1012,15 @@ function applyGospelAI() {
   }
   if (data.intro) document.getElementById('g-intro').value = data.intro;
   if (data.lyrics) document.getElementById('g-lyrics').value = data.lyrics;
+
+  // Store AI-generated SEO fields in dataset
+  const form = document.getElementById('tab-gospel');
+  form.dataset.aiTagsKr = JSON.stringify(data.tags_kr || []);
+  form.dataset.aiTagsEn = JSON.stringify(data.tags_en || []);
+  form.dataset.aiSearchHook = data.search_hook || '';
+  form.dataset.aiClickTitle = data.click_title || '';
+  form.dataset.aiTimestamps = JSON.stringify(data.timestamps || []);
+  form.dataset.aiPinned = data.pinned_comment || '';
 
   errorEl.style.display = 'none';
   showToast();
@@ -1095,24 +1149,28 @@ function generateShortsPrompt() {
   const isHymn = num ? true : false;
   const songDesc = isHymn ? `한국 새찬송가 ${num}장 "${title}"` : `"${title}"`;
 
-  const prompt = `당신은 한국 기독교 찬송가/복음성가 전문가입니다. ${songDesc}에 대한 정보를 아래 JSON 형식으로 작성해주세요.
+  const prompt = `당신은 한국 기독교 찬송가/복음성가 전문가이자 YouTube SEO 전문가입니다. ${songDesc}에 대한 정보를 아래 JSON 형식으로 작성해주세요.
 
 ⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
-- 모르는 항목은 빈 문자열("") 또는 "없음"으로 남겨두세요.
-- 추측하거나 유사한 다른 곡의 정보를 섞지 마세요.
 
 반드시 아래 JSON 형식만 응답하세요. JSON 외에 다른 텍스트는 절대 포함하지 마세요.
 
 {
   "english_title": "영어 제목 (확실한 경우만. 모르면 빈 문자열)",
-  "season": "관련 절기 하나만. 가능한 값: 사순절, 부활절, 성탄절, 고난주간, 종려주일, 없음"
+  "season": "관련 절기 하나만. 가능한 값: 사순절, 부활절, 성탄절, 고난주간, 종려주일, 없음",
+  "tags_kr": ["한국어 YouTube 검색 태그 5개. 이 곡과 관련된 검색 키워드"],
+  "tags_en": ["영어 YouTube 검색 태그 3개"],
+  "short_desc": "숏츠 설명 1-2문장. 이 곡이 어떤 곡인지, 어떤 상황에서 듣기 좋은지 (예: '종려주일에 듣기 좋은 찬송가 어쿠스틱 편곡입니다.')",
+  "click_title": "사람들이 클릭하고 싶게 만드는 감성적 부제 15자 이내 (예: '이 찬양 들으면 눈물납니다', '예배 전 꼭 듣는 찬양')"
 }
 
 규칙:
 - JSON 외에 설명, 인사말, 마크다운 코드블록(\`\`\`) 등을 절대 포함하지 마세요
-- english_title: 영어권에서 작곡된 번역곡인 경우에만 영어 원제를 작성하세요. 한국 창작곡이거나 불확실하면 빈 문자열로 하세요. 절대로 제목을 번역해서 만들지 마세요.
-- season: 해당 곡이 특정 절기와 직접적으로 관련된 경우에만 작성하세요. 불확실하면 "없음"으로 하세요.
-- 이 곡이 실존하는지 확인하세요. 존재 여부가 불확실하면 {"error": "확인된 정보를 찾을 수 없습니다."} 형태로 응답하세요.`;
+- english_title: 확인된 영어 원제만. 절대로 번역해서 만들지 마세요.
+- season: 불확실하면 "없음"
+- short_desc: YouTube 숏츠 설명에 들어갈 자연스러운 문장. 해시태그가 아닌 일반 문장으로.
+- click_title: 과장하지 말고 곡 분위기에 맞게.
+- 실존 확인 불가시 {"error": "확인된 정보를 찾을 수 없습니다."} 형태로 응답.`;
 
   document.getElementById('ai-s-prompt-text').textContent = prompt;
   document.getElementById('ai-s-prompt-area').style.display = 'block';
@@ -1156,6 +1214,13 @@ function applyShortsAI() {
     document.getElementById('s-season').value = '';
   }
 
+  // Store AI-generated SEO fields in dataset
+  const form = document.getElementById('tab-shorts');
+  form.dataset.aiTagsKr = JSON.stringify(data.tags_kr || []);
+  form.dataset.aiTagsEn = JSON.stringify(data.tags_en || []);
+  form.dataset.aiShortDesc = data.short_desc || '';
+  form.dataset.aiClickTitle = data.click_title || '';
+
   errorEl.style.display = 'none';
   showToast();
   setTimeout(() => { document.getElementById('s-title-en').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
@@ -1177,52 +1242,80 @@ function generateHymn() {
   const lyrics = document.getElementById('h-lyrics').value.trim();
   const seasons = getSeasons('h-season');
 
+  // AI-generated SEO data
+  const form = document.getElementById('tab-hymn');
+  const aiTagsKr = JSON.parse(form.dataset.aiTagsKr || '[]');
+  const aiTagsEn = JSON.parse(form.dataset.aiTagsEn || '[]');
+  const aiSearchHook = form.dataset.aiSearchHook || '';
+  const aiClickTitle = form.dataset.aiClickTitle || '';
+  const aiTimestamps = JSON.parse(form.dataset.aiTimestamps || '[]');
+  const aiPinned = form.dataset.aiPinned || '';
+
   if (!num || !kr) { alert('찬송가 번호와 제목을 입력해주세요.'); return; }
 
-  // === TITLE (| → - , 60자 이내 목표, 핵심 키워드 앞배치) ===
-  let title = `찬송가 ${num}장 ${kr} - ${style} 편곡`;
-  if (lyrics) title += ' (가사포함)';
+  // === TITLE (클릭 유도 부제 포함) ===
+  let title = `찬송가 ${num}장 ${kr}`;
+  if (aiClickTitle) title += ` | ${aiClickTitle}`;
   if (en) title += ` - ${en}`;
-  if (seasons.length > 0) title += seasonLabel(seasons);
+  if (lyrics) title += ' (가사포함)';
 
-  // === SHORTS TITLE ===
+  // === SHORTS TITLE (#shorts 제거) ===
   let shortsTitle = `찬송가 ${num}장 ${kr}`;
   if (en) shortsTitle += ` - ${en}`;
-  shortsTitle += ` #shorts #찬송가`;
+  shortsTitle += ` #찬송가`;
   if (seasons.length > 0) shortsTitle += ` #${seasons[0]}`;
+  shortsTitle += ' #찬양';
 
-  // === DESCRIPTION (첫 2줄에 핵심 키워드 집중) ===
-  let desc = `찬송가 ${num}장 "${kr}" ${style} 편곡 - ${en ? en + ' - ' : ''}ALL THAT HYMN\n`;
-  desc += `찬송가 편곡, 예배 음악, ${usage ? usage + '에 좋은 ' : ''}찬양을 들어보세요.`;
+  // === DESCRIPTION (첫 2줄에 검색 의도 + 클릭 유도) ===
+  let hookLine = aiSearchHook || `찬송가 편곡, 예배 음악, ${usage ? usage + '에 좋은 ' : ''}찬양`;
+  let desc = `${hookLine} | 찬송가 ${num}장 "${kr}" ${style} 편곡 - ALL THAT HYMN\n`;
+  if (aiClickTitle) {
+    desc += `${aiClickTitle}을 들어보세요.`;
+  } else {
+    desc += `찬송가 편곡, 예배 음악을 들어보세요.`;
+  }
   if (intro) desc += `\n\n${intro}`;
   if (lyrics) desc += `\n\n[가사]\n${lyrics}`;
-  desc += `\n\n`;
-  desc += `더 많은 찬송가 편곡 듣기:\n`;
+  desc += `\n\n더 많은 찬송가 편곡 듣기:\n`;
   desc += `▶ 교회에서 자주 부르는 찬송가 모음: [PLAYLIST 링크]\n`;
   desc += `▶ 새벽기도 찬송가 PLAYLIST: [PLAYLIST 링크]\n`;
   desc += `\nInstagram: https://www.instagram.com/allthathymn/\n\n`;
-  // 해시태그 3~5개 (설명 하단, 15개 미만 필수)
-  let descHashtags = [`#찬송가${num}장`, `#${kr.replace(/ /g, '')}`, '#찬송가편곡'];
-  if (en) descHashtags.push(`#${en.replace(/ /g, '')}`);
+  // 해시태그 5개 (쉼표/공백 정리)
+  let descHashtags = [`#찬송가${num}장`, `#${kr.replace(/\s/g, '')}`, '#찬송가편곡'];
+  if (en) descHashtags.push(`#${en.replace(/\s/g, '')}`);
   if (seasons.length > 0) descHashtags.push(`#${seasons[0]}`);
   desc += descHashtags.slice(0, 5).join(' ');
 
-  // === TAGS (5-8개, 핵심만) ===
+  // === TAGS (15~20개: 고정 + AI 생성) ===
   let tagList = [
-    `찬송가 ${num}장`, kr,
-    '찬송가 편곡', '예배 음악',
-    'hymn cover', 'worship music',
-    'ALL THAT HYMN',
+    `찬송가 ${num}장`, kr, '찬송가 편곡', '예배 음악',
+    'hymn cover', 'worship music', 'ALL THAT HYMN',
   ];
   if (en) tagList.splice(2, 0, en);
   if (style === '아카펠라') tagList.push('아카펠라 찬양');
   if (seasons.length > 0) tagList.push(seasons[0]);
-  let tags = [...new Set(tagList)].slice(0, 8).join(', ');
+  tagList.push(...aiTagsKr, ...aiTagsEn);
+  let tags = [...new Set(tagList)].slice(0, 20).join(', ');
 
-  // === HASHTAGS (설명에 이미 포함, 별도 출력은 참고용) ===
+  // === HASHTAGS ===
   let hashtags = descHashtags.slice(0, 5).join(' ');
 
-  setOutput(title, shortsTitle, desc, tags, hashtags);
+  // === TIMESTAMPS (템플릿) ===
+  let timestamps = '';
+  if (aiTimestamps.length > 0) {
+    timestamps = aiTimestamps.map((t, i) => `0:00 ${t}`).join('\n');
+    timestamps += '\n\n⏱️ 실제 시간에 맞게 수정해주세요';
+  }
+
+  // === PINNED COMMENT ===
+  let pinned = '';
+  if (aiPinned) {
+    pinned = `${aiPinned}\n`;
+    pinned += `이 찬송가가 좋으셨다면 구독과 좋아요 부탁드립니다.\n\n`;
+    pinned += `▶ 더 많은 찬송가 편곡: https://youtube.com/@ALLTHATHYMN645`;
+  }
+
+  setOutput(title, shortsTitle, desc, tags, hashtags, timestamps, pinned);
 }
 
 // ===== Generate: 복음성가 =====
@@ -1234,37 +1327,68 @@ function generateGospel() {
   const intro = document.getElementById('g-intro').value.trim();
   const lyrics = document.getElementById('g-lyrics').value.trim();
 
+  // AI-generated SEO data
+  const form = document.getElementById('tab-gospel');
+  const aiTagsKr = JSON.parse(form.dataset.aiTagsKr || '[]');
+  const aiTagsEn = JSON.parse(form.dataset.aiTagsEn || '[]');
+  const aiSearchHook = form.dataset.aiSearchHook || '';
+  const aiClickTitle = form.dataset.aiClickTitle || '';
+  const aiTimestamps = JSON.parse(form.dataset.aiTimestamps || '[]');
+  const aiPinned = form.dataset.aiPinned || '';
+
   if (!kr) { alert('곡 제목을 입력해주세요.'); return; }
 
-  // Title (- 사용)
-  let title = `${kr} - ${category} ${style} 편곡`;
-  if (lyrics) title += ' (가사포함)';
+  // === TITLE (클릭 유도 부제 포함) ===
+  let title = `${kr}`;
+  if (aiClickTitle) title += ` | ${aiClickTitle}`;
+  title += ` - ${category} ${style} 편곡`;
   if (en) title += ` - ${en}`;
+  if (lyrics) title += ' (가사포함)';
 
-  // Shorts
-  let shortsTitle = `${kr} - ${category} 편곡 #shorts #${category} #찬양`;
+  // === SHORTS TITLE (#shorts 제거) ===
+  let shortsTitle = `${kr} - ${category} 편곡 #${category} #찬양 #예배음악`;
 
-  // Description (첫 2줄 키워드 집중)
-  let desc = `"${kr}" ${category} ${style} 편곡 - ALL THAT HYMN\n`;
-  desc += `${category}, 찬양, 예배 음악을 어쿠스틱 편곡으로 들어보세요.`;
+  // === DESCRIPTION ===
+  let hookLine = aiSearchHook || `${category}, 찬양, 예배 음악`;
+  let desc = `${hookLine} | "${kr}" ${style} 편곡 - ALL THAT HYMN\n`;
+  if (aiClickTitle) {
+    desc += `${aiClickTitle}을 들어보세요.`;
+  } else {
+    desc += `${category} 편곡을 들어보세요.`;
+  }
   if (intro) desc += `\n\n${intro}`;
   if (lyrics) desc += `\n\n[가사]\n${lyrics}`;
-  desc += `\n\n`;
-  desc += `더 많은 찬양 듣기:\n`;
+  desc += `\n\n더 많은 찬양 듣기:\n`;
   desc += `▶ 교회에서 자주 부르는 찬송가 모음: [PLAYLIST 링크]\n`;
   desc += `▶ 찬양예배 CCM PLAYLIST: [PLAYLIST 링크]\n`;
   desc += `\nInstagram: https://www.instagram.com/allthathymn/\n\n`;
-  let descHash = [`#${kr.replace(/ /g, '')}`, `#${category}`, '#찬양', '#ALLTHATHYMN'];
-  desc += descHash.slice(0, 4).join(' ');
+  let descHash = [`#${kr.replace(/\s/g, '')}`, `#${category}`, '#찬양', '#예배음악', '#ALLTHATHYMN'];
+  desc += descHash.slice(0, 5).join(' ');
 
-  // Tags (5-8개)
+  // === TAGS (15~20개) ===
   let tagList = [kr, category, '찬양', '예배 음악', 'worship music', 'ALL THAT HYMN'];
   if (en) tagList.splice(1, 0, en);
-  let tags = [...new Set(tagList)].slice(0, 8).join(', ');
+  tagList.push(...aiTagsKr, ...aiTagsEn);
+  let tags = [...new Set(tagList)].slice(0, 20).join(', ');
 
-  let hashtags = descHash.slice(0, 4).join(' ');
+  let hashtags = descHash.slice(0, 5).join(' ');
 
-  setOutput(title, shortsTitle, desc, tags, hashtags);
+  // === TIMESTAMPS ===
+  let timestamps = '';
+  if (aiTimestamps.length > 0) {
+    timestamps = aiTimestamps.map((t, i) => `0:00 ${t}`).join('\n');
+    timestamps += '\n\n⏱️ 실제 시간에 맞게 수정해주세요';
+  }
+
+  // === PINNED COMMENT ===
+  let pinned = '';
+  if (aiPinned) {
+    pinned = `${aiPinned}\n`;
+    pinned += `이 찬양이 좋으셨다면 구독과 좋아요 부탁드립니다.\n\n`;
+    pinned += `▶ 더 많은 찬양 편곡: https://youtube.com/@ALLTHATHYMN645`;
+  }
+
+  setOutput(title, shortsTitle, desc, tags, hashtags, timestamps, pinned);
 }
 
 // ===== Generate: PLAYLIST =====
@@ -1317,17 +1441,23 @@ function generatePlaylist() {
   if (seasons.length > 0) descHash.push(`#${seasons[0]}`);
   desc += descHash.slice(0, 5).join(' ');
 
-  // === TAGS (5-8개) ===
+  // === TAGS (15~20개: 고정 + 테마/용도 확장) ===
   let tagList = [
     '찬송가 모음', theme, '중간광고없음',
     '예배 음악', 'hymn playlist', 'worship music', 'ALL THAT HYMN',
+    '찬송가 플레이리스트', '예배 BGM', '묵상 음악', '기도 음악',
+    'Korean hymn', 'church music', '잔잔한 찬송가',
   ];
-  if (seasons.length > 0) tagList.push(seasons[0]);
-  let tags = [...new Set(tagList)].slice(0, 8).join(', ');
+  if (usage) tagList.push(usage);
+  if (seasons.length > 0) {
+    tagList.push(seasons[0]);
+    tagList.push(...seasonTagsKr(seasons), ...seasonTagsEn(seasons));
+  }
+  let tags = [...new Set(tagList)].slice(0, 20).join(', ');
 
   let hashtags = descHash.slice(0, 5).join(' ');
 
-  setOutput(title, shortsTitle, desc, tags, hashtags);
+  setOutput(title, shortsTitle, desc, tags, hashtags, '', '');
 }
 
 // ===== Generate: Shorts =====
@@ -1338,44 +1468,74 @@ function generateShorts() {
   const title_en = document.getElementById('s-title-en').value.trim();
   const season = document.getElementById('s-season').value;
 
+  // AI-generated SEO data
+  const form = document.getElementById('tab-shorts');
+  const aiTagsKr = JSON.parse(form.dataset.aiTagsKr || '[]');
+  const aiTagsEn = JSON.parse(form.dataset.aiTagsEn || '[]');
+  const aiShortDesc = form.dataset.aiShortDesc || '';
+  const aiClickTitle = form.dataset.aiClickTitle || '';
+
   if (!title_kr) { alert('곡 제목을 입력해주세요.'); return; }
 
   let shortsTitle = '';
-  let tags = '';
+  let tagList = [];
+  let desc = '';
+  let descHashtags = [];
 
   if (type === '찬송가' && num) {
     shortsTitle = `찬송가 ${num}장 ${title_kr}`;
+    if (aiClickTitle) shortsTitle += ` | ${aiClickTitle}`;
     if (title_en) shortsTitle += ` - ${title_en}`;
-    shortsTitle += ` #shorts #찬송가`;
+    shortsTitle += ` #찬송가`;
     if (season) shortsTitle += ` #${season}`;
-    tags = [`찬송가 ${num}장`, title_kr, '찬송가 편곡', 'hymn', 'ALL THAT HYMN'].join(', ');
+
+    tagList = [`찬송가 ${num}장`, title_kr, '찬송가 편곡', 'hymn', 'ALL THAT HYMN',
+               '찬송가', '예배 음악', 'worship music'];
+    descHashtags = [`#찬송가${num}장`, `#${title_kr.replace(/\s/g, '')}`, '#찬송가편곡'];
+    if (season) descHashtags.push(`#${season}`);
+
+    desc = `찬송가 ${num}장 "${title_kr}" 어쿠스틱 편곡\n`;
+    if (aiShortDesc) desc += `${aiShortDesc}\n`;
 
   } else if (type === '복음성가') {
-    shortsTitle = `${title_kr} - 복음성가 편곡 #shorts #복음성가 #찬양`;
-    tags = [title_kr, '복음성가', '찬양', 'worship', 'ALL THAT HYMN'].join(', ');
+    shortsTitle = `${title_kr}`;
+    if (aiClickTitle) shortsTitle += ` | ${aiClickTitle}`;
+    shortsTitle += ` #복음성가 #찬양 #예배음악`;
+
+    tagList = [title_kr, '복음성가', '찬양', 'worship', 'ALL THAT HYMN',
+               '예배 음악', 'CCM'];
+    descHashtags = [`#${title_kr.replace(/\s/g, '')}`, '#복음성가', '#찬양'];
+
+    desc = `"${title_kr}" 복음성가 편곡\n`;
+    if (aiShortDesc) desc += `${aiShortDesc}\n`;
 
   } else if (type === '비하인드') {
-    shortsTitle = `${title_kr} 편곡 비하인드 #shorts #비하인드 #ALLTHATHYMN`;
-    tags = [title_kr, '비하인드', '편곡 과정', 'ALL THAT HYMN'].join(', ');
+    shortsTitle = `${title_kr} 편곡 비하인드 #비하인드 #ALLTHATHYMN`;
+
+    tagList = [title_kr, '비하인드', '편곡 과정', 'ALL THAT HYMN', 'behind the scenes'];
+    descHashtags = [`#${title_kr.replace(/\s/g, '')}`, '#비하인드', '#편곡과정'];
+
+    desc = `${title_kr} 편곡 비하인드\n`;
 
   } else if (type === '참여형') {
-    shortsTitle = `이 찬송가 뭔지 아시나요? - ${title_kr} #shorts #찬송가퀴즈`;
-    tags = ['찬송가 퀴즈', title_kr, '찬송가', 'ALL THAT HYMN'].join(', ');
+    shortsTitle = `이 찬송가 뭔지 아시나요? - ${title_kr} #찬송가퀴즈 #찬송가`;
+
+    tagList = ['찬송가 퀴즈', title_kr, '찬송가', 'ALL THAT HYMN', 'hymn quiz'];
+    descHashtags = ['#찬송가퀴즈', `#${title_kr.replace(/\s/g, '')}`, '#찬송가'];
   }
 
-  document.getElementById('out-title-text').textContent = '';
-  document.getElementById('out-shorts-text').textContent = shortsTitle;
-  document.getElementById('out-desc-text').textContent = '';
-  document.getElementById('out-tags-text').textContent = tags;
-  document.getElementById('out-hashtags-text').textContent = '';
+  // Add AI tags
+  tagList.push(...aiTagsKr, ...aiTagsEn);
+  let tags = [...new Set(tagList)].slice(0, 15).join(', ');
 
-  document.getElementById('out-title').style.display = 'none';
-  document.getElementById('out-shorts-title').style.display = 'block';
-  document.getElementById('out-desc').style.display = 'none';
-  document.getElementById('out-tags').style.display = 'block';
-  document.getElementById('out-hashtags').style.display = 'none';
+  // Add CTA + hashtags to description
+  desc += `\n▶ 풀버전 듣기: [본편 영상 링크]\n`;
+  desc += `▶ 채널 구독: https://youtube.com/@ALLTHATHYMN645\n\n`;
+  descHashtags.push('#ALLTHATHYMN');
+  let hashtags = descHashtags.slice(0, 5).join(' ');
+  desc += hashtags;
 
-  showOutput();
+  setOutput('', shortsTitle, desc, tags, hashtags, '', '');
 }
 </script>
 
