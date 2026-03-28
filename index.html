@@ -1257,13 +1257,13 @@ function generateHymn() {
   if (en) title += ` - ${en}`;
   if (lyrics) title += ' (가사포함)';
 
-  // === SHORTS TITLE (해시태그 2개) ===
+  // === SHORTS TITLE (#Shorts + 니치 2개, 총 3개) ===
   let shortsTitle = `찬송가 ${num}장 ${kr}`;
   if (en) shortsTitle += ` - ${en}`;
   if (seasons.length > 0) {
-    shortsTitle += ` #찬송가 #${seasons[0]}`;
+    shortsTitle += ` #Shorts #찬송가 #${seasons[0]}`;
   } else {
-    shortsTitle += ` #찬송가 #찬양`;
+    shortsTitle += ` #Shorts #찬송가 #찬양`;
   }
 
   // === DESCRIPTION (첫 2줄에 검색 의도 + 클릭 유도) ===
@@ -1342,8 +1342,8 @@ function generateGospel() {
   if (en) title += ` - ${en}`;
   if (lyrics) title += ' (가사포함)';
 
-  // === SHORTS TITLE (해시태그 2개) ===
-  let shortsTitle = `${kr} - ${category} 편곡 #${category} #찬양`;
+  // === SHORTS TITLE (#Shorts + 니치 2개, 총 3개) ===
+  let shortsTitle = `${kr} - ${category} 편곡 #Shorts #${category} #찬양`;
 
   // === DESCRIPTION ===
   let hookLine = aiSearchHook || `${category}, 찬양, 예배 음악`;
@@ -1493,9 +1493,9 @@ function generateShorts() {
     if (aiClickTitle) shortsTitle += ` | ${aiClickTitle}`;
     if (title_en) shortsTitle += ` - ${title_en}`;
     if (season) {
-      shortsTitle += ` #찬송가 #${season}`;
+      shortsTitle += ` #Shorts #찬송가 #${season}`;
     } else {
-      shortsTitle += ` #찬송가 #찬양`;
+      shortsTitle += ` #Shorts #찬송가 #찬양`;
     }
 
     tagList = [`찬송가 ${num}장`, title_kr, '찬송가 편곡', 'hymn', 'ALL THAT HYMN',
@@ -1509,7 +1509,7 @@ function generateShorts() {
   } else if (type === '복음성가') {
     shortsTitle = `${title_kr}`;
     if (aiClickTitle) shortsTitle += ` | ${aiClickTitle}`;
-    shortsTitle += ` #복음성가 #찬양`;
+    shortsTitle += ` #Shorts #복음성가 #찬양`;
 
     tagList = [title_kr, '복음성가', '찬양', 'worship', 'ALL THAT HYMN',
                '예배 음악', 'CCM'];
@@ -1519,7 +1519,7 @@ function generateShorts() {
     if (aiShortDesc) desc += `${aiShortDesc}\n`;
 
   } else if (type === '비하인드') {
-    shortsTitle = `${title_kr} 편곡 비하인드 #비하인드 #ALLTHATHYMN`;
+    shortsTitle = `${title_kr} 편곡 비하인드 #Shorts #비하인드 #ALLTHATHYMN`;
 
     tagList = [title_kr, '비하인드', '편곡 과정', 'ALL THAT HYMN', 'behind the scenes'];
     descHashtags = [`#${title_kr.replace(/\s/g, '')}`, '#비하인드', '#편곡과정'];
@@ -1527,7 +1527,7 @@ function generateShorts() {
     desc = `${title_kr} 편곡 비하인드\n`;
 
   } else if (type === '참여형') {
-    shortsTitle = `이 찬송가 뭔지 아시나요? - ${title_kr} #찬송가퀴즈 #찬송가`;
+    shortsTitle = `이 찬송가 뭔지 아시나요? - ${title_kr} #Shorts #찬송가퀴즈 #찬송가`;
 
     tagList = ['찬송가 퀴즈', title_kr, '찬송가', 'ALL THAT HYMN', 'hymn quiz'];
     descHashtags = ['#찬송가퀴즈', `#${title_kr.replace(/\s/g, '')}`, '#찬송가'];
