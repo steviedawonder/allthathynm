@@ -224,6 +224,38 @@
         </div>
       </div>
 
+      <div class="form-row">
+        <div class="form-group">
+          <label>곡 분위기</label>
+          <select id="ai-mood">
+            <option value="잔잔한">잔잔한 / 평온한</option>
+            <option value="웅장한">웅장한 / 장엄한</option>
+            <option value="기쁜">기쁜 / 밝은</option>
+            <option value="슬픈">슬픈 / 애잔한</option>
+            <option value="결단">결단 / 의지적인</option>
+            <option value="감사">감사 / 찬미</option>
+            <option value="위로">위로 / 치유</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>청취 상황</label>
+          <select id="ai-situation">
+            <option value="새벽기도">새벽기도</option>
+            <option value="예배 전">예배 전</option>
+            <option value="묵상 / QT">묵상 / QT</option>
+            <option value="기도 시간">기도 시간</option>
+            <option value="잠들기 전">잠들기 전</option>
+            <option value="마음이 힘들 때">마음이 힘들 때</option>
+            <option value="주일 아침">주일 아침</option>
+            <option value="말씀 묵상 중">말씀 묵상 중</option>
+            <option value="조용한 저녁">조용한 저녁</option>
+            <option value="위로가 필요할 때">위로가 필요할 때</option>
+            <option value="결단 / 헌신">결단 / 헌신</option>
+            <option value="감사 기도 중">감사 기도 중</option>
+          </select>
+        </div>
+      </div>
+
       <button class="btn-generate" style="background: var(--accent2); margin-bottom: 16px;" onclick="generatePrompt()">1단계: LLM 프롬프트 생성</button>
 
       <div id="ai-prompt-area" style="display:none;">
@@ -338,6 +370,37 @@
       <div class="form-group" style="margin-top: 16px;">
         <label>곡 제목 (한국어) *</label>
         <input type="text" id="ai-g-title" placeholder="예: 주의 자녀로 산다는 것은">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>곡 분위기</label>
+          <select id="ai-g-mood">
+            <option value="잔잔한">잔잔한 / 평온한</option>
+            <option value="웅장한">웅장한 / 장엄한</option>
+            <option value="기쁜">기쁜 / 밝은</option>
+            <option value="슬픈">슬픈 / 애잔한</option>
+            <option value="결단">결단 / 의지적인</option>
+            <option value="감사">감사 / 찬미</option>
+            <option value="위로">위로 / 치유</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>청취 상황</label>
+          <select id="ai-g-situation">
+            <option value="새벽기도">새벽기도</option>
+            <option value="예배 전">예배 전</option>
+            <option value="묵상 / QT">묵상 / QT</option>
+            <option value="기도 시간">기도 시간</option>
+            <option value="잠들기 전">잠들기 전</option>
+            <option value="마음이 힘들 때">마음이 힘들 때</option>
+            <option value="주일 아침">주일 아침</option>
+            <option value="말씀 묵상 중">말씀 묵상 중</option>
+            <option value="조용한 저녁">조용한 저녁</option>
+            <option value="위로가 필요할 때">위로가 필요할 때</option>
+            <option value="결단 / 헌신">결단 / 헌신</option>
+            <option value="감사 기도 중">감사 기도 중</option>
+          </select>
+        </div>
       </div>
       <button class="btn-generate" style="background: var(--accent2); margin-bottom: 16px;" onclick="generateGospelPrompt()">1단계: LLM 프롬프트 생성</button>
       <div id="ai-g-prompt-area" style="display:none;">
@@ -542,6 +605,37 @@
         <div class="form-group">
           <label>곡 제목 (한국어) *</label>
           <input type="text" id="ai-s-title" placeholder="예: 내 주를 가까이 하게 함은">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>곡 분위기</label>
+          <select id="ai-s-mood">
+            <option value="잔잔한">잔잔한 / 평온한</option>
+            <option value="웅장한">웅장한 / 장엄한</option>
+            <option value="기쁜">기쁜 / 밝은</option>
+            <option value="슬픈">슬픈 / 애잔한</option>
+            <option value="결단">결단 / 의지적인</option>
+            <option value="감사">감사 / 찬미</option>
+            <option value="위로">위로 / 치유</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>청취 상황</label>
+          <select id="ai-s-situation">
+            <option value="새벽기도">새벽기도</option>
+            <option value="예배 전">예배 전</option>
+            <option value="묵상 / QT">묵상 / QT</option>
+            <option value="기도 시간">기도 시간</option>
+            <option value="잠들기 전">잠들기 전</option>
+            <option value="마음이 힘들 때">마음이 힘들 때</option>
+            <option value="주일 아침">주일 아침</option>
+            <option value="말씀 묵상 중">말씀 묵상 중</option>
+            <option value="조용한 저녁">조용한 저녁</option>
+            <option value="위로가 필요할 때">위로가 필요할 때</option>
+            <option value="결단 / 헌신">결단 / 헌신</option>
+            <option value="감사 기도 중">감사 기도 중</option>
+          </select>
         </div>
       </div>
       <button class="btn-generate" style="background: var(--accent2); margin-bottom: 16px;" onclick="generateShortsPrompt()">1단계: LLM 프롬프트 생성</button>
@@ -781,6 +875,8 @@ function generatePrompt() {
   const num = document.getElementById('ai-num').value.trim();
   const title = document.getElementById('ai-title').value.trim();
   const style = document.getElementById('h-style').value;
+  const mood = document.getElementById('ai-mood').value;
+  const situation = document.getElementById('ai-situation').value;
 
   if (!num || !title) {
     alert('찬송가 번호와 제목을 입력해주세요.');
@@ -807,6 +903,8 @@ function generatePrompt() {
   const prompt = `당신은 한국 개신교 찬송가 전문가이자 YouTube SEO 전문가입니다.
 채널: ALL THAT HYMN — 새찬송가를 어쿠스틱 기타·피아노로 편곡하는 채널
 이번 편곡 스타일: ${style}
+곡 분위기: ${mood}
+추천 청취 상황: ${situation}
 작업: 새찬송가(2006년 개편) ${num}장 "${title}"의 YouTube 업로드용 메타데이터를 아래 JSON 형식으로 작성해주세요.
 
 ⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
@@ -828,7 +926,7 @@ function generatePrompt() {
   "tags_kr": ["이 찬송가를 YouTube에서 검색할 때 실제로 입력할 한국어 키워드 10개. 포함 권장: 찬송가 번호·제목, 편곡 스타일(${styleTagHint}), 청취 상황(새벽기도/기도할 때/수면/묵상), 감성(잔잔한/은혜로운) 등 조합"],
   "tags_en": ["이 찬송가를 YouTube에서 찾을 때 실제로 검색할 영어 키워드 5개. ${style === '어쿠스틱 피아노' ? 'piano hymn / piano worship / acoustic piano / Korean hymn / prayer music' : style === '아카펠라' ? 'acapella hymn / acapella worship / Korean hymn / choral hymn / worship music' : style === '기타+피아노' ? 'acoustic hymn / guitar piano worship / Korean hymn / fingerstyle hymn / prayer music' : 'fingerstyle hymn / acoustic guitar hymn / Korean hymn / acoustic hymn / prayer music'} 같은 실사용 검색어 위주. 작곡가 이름·악보명 금지"],
   "search_hook": "YouTube 설명 첫 줄에 쓸 검색 유입 문장. 청취 상황(기도/새벽기도/묵상/수면)과 어쿠스틱 편곡 스타일을 조합해서 자연스럽게 작성 (예: '새벽기도 전 기타로 듣는 잔잔한 찬송가', '기도할 때 흘려듣기 좋은 어쿠스틱 찬양')",
-  "click_title": "아래 [선택 후보] 중 이 찬송가 분위기에 맞는 것 하나를 그대로 복사. 절대 새로 만들지 말 것.",
+  "click_title": "${situation}에 어울리는 ${instrumentWord} 찬양",
   "pinned_comment": "YouTube 고정댓글용 감성 문구 1-2문장. 이 찬송가의 핵심 메시지로 공감을 이끌어내는 문장"
 }
 
@@ -840,16 +938,7 @@ function generatePrompt() {
 - lyrics: hymnkorea.org 공식 가사만. 창작·기억 의존 절대 금지.
 - tags_kr: "통기타 찬송가", "핑거스타일 찬양", "새벽기도 음악" 같은 이 채널 특화 키워드를 반드시 포함하세요.
 - tags_en: 작곡가 이름 등 학술 용어 금지. YouTube 실제 검색어만.
-- click_title: 반드시 아래 형식으로만 작성하세요:
-  형식: "[상황 키워드]에 [동사] [악기] [찬양|편곡|찬송가]"
-  [상황 키워드] — 이 찬송가의 분위기·주제에 가장 어울리는 것 하나 선택:
-    새벽기도 / 기도 시간 / 묵상할 때 / 잠들기 전 / 예배 전 / 혼자 기도할 때
-    말씀 묵상 중 / 마음이 힘들 때 / 새벽 예배 / 수면 전 / 잠 못 이루는 밤
-    예배 준비 / 조용한 새벽 / 기도 응답을 기다리며 / 주일 아침
-  [동사] — 어울리는 / 듣기 좋은 / 틀어두기 좋은 (셋 중 하나)
-  [악기] — 편곡 스타일(${style})에 맞게: ${instrumentWord}
-  올바른 예: "새벽기도에 어울리는 ${instrumentWord} 찬송가" / "잠들기 전 틀어두기 좋은 ${instrumentWord} 찬양" / "마음이 힘들 때 듣기 좋은 ${instrumentWord} 편곡"
-  금지: 위 형식 외의 모든 표현 — 감탄형, 의문형, 비교형, 수식어형 전부 불가
+- click_title: 위에 제시된 값을 그대로 사용하세요. 변경 금지.
 - 새찬송가 ${num}장이 "${title}"이 맞는지 확인하세요. 불일치시 {"error": "찬송가 ${num}장의 제목이 '${title}'과 일치하지 않습니다."} 형태로 응답하세요.`;
 
   document.getElementById('ai-prompt-text').textContent = prompt;
@@ -953,7 +1042,6 @@ function applyAIResponse() {
   form.dataset.aiTagsKr = JSON.stringify(data.tags_kr || []);
   form.dataset.aiTagsEn = JSON.stringify(data.tags_en || []);
   form.dataset.aiSearchHook = data.search_hook || '';
-  form.dataset.aiClickTitle = data.click_title || '';
   form.dataset.aiTimestamps = JSON.stringify(data.timestamps || []);
   form.dataset.aiPinned = data.pinned_comment || '';
 
@@ -973,6 +1061,8 @@ function generateGospelPrompt() {
   if (!title) { alert('곡 제목을 입력해주세요.'); return; }
 
   const style = document.getElementById('g-style').value;
+  const mood = document.getElementById('ai-g-mood').value;
+  const situation = document.getElementById('ai-g-situation').value;
   const instrumentWord = style === '어쿠스틱 피아노' ? '피아노'
     : style === '아카펠라' ? '아카펠라'
     : style === '기타+피아노' ? '어쿠스틱'
@@ -993,6 +1083,8 @@ function generateGospelPrompt() {
   const prompt = `당신은 한국 기독교 음악(복음성가/CCM) 전문가이자 YouTube SEO 전문가입니다.
 채널: ALL THAT HYMN — 복음성가·CCM을 어쿠스틱 기타·피아노로 편곡하는 채널
 이번 편곡 스타일: ${style}
+곡 분위기: ${mood}
+추천 청취 상황: ${situation}
 작업: "${title}"의 YouTube 업로드용 메타데이터를 아래 JSON 형식으로 작성해주세요.
 
 ⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
@@ -1013,7 +1105,7 @@ function generateGospelPrompt() {
   "tags_kr": ["이 곡을 YouTube에서 검색할 때 실제로 입력할 한국어 키워드 10개. 포함 권장: 곡 제목, 편곡 스타일(${styleTagHint}), 청취 상황(새벽기도/기도할 때/수면/묵상), 감성(잔잔한/은혜로운) 등 조합"],
   "tags_en": ["이 곡을 YouTube에서 찾을 때 실제로 검색할 영어 키워드 5개. ${style === '어쿠스틱 피아노' ? 'piano worship / acoustic piano CCM / Korean gospel / prayer music / piano cover' : style === '아카펠라' ? 'acapella worship / acapella CCM / Korean gospel / choral worship / acapella cover' : style === '기타+피아노' ? 'acoustic worship / guitar piano CCM / Korean gospel / fingerstyle worship / prayer music' : 'acoustic guitar worship / fingerstyle CCM / Korean gospel / acoustic worship / prayer music'} 같은 실사용 검색어 위주. 작곡가 이름 금지"],
   "search_hook": "YouTube 설명 첫 줄에 쓸 검색 유입 문장. 청취 상황(기도/새벽기도/묵상/수면)과 어쿠스틱 편곡 스타일을 조합해서 자연스럽게 작성 (예: '기도할 때 흘려듣기 좋은 어쿠스틱 찬양', '새벽기도 전 마음을 여는 잔잔한 CCM')",
-  "click_title": "아래 [선택 후보] 중 이 곡 분위기에 맞는 것 하나를 그대로 복사. 절대 새로 만들지 말 것.",
+  "click_title": "${situation}에 어울리는 ${instrumentWord} 찬양",
   "pinned_comment": "YouTube 고정댓글용 감성 문구 1-2문장. 곡의 핵심 메시지를 담아 공감을 이끌어내는 문장"
 }
 
@@ -1025,16 +1117,7 @@ function generateGospelPrompt() {
 - lyrics: 웹 검색으로 확인된 가사만. 창작 절대 금지.
 - tags_kr: "통기타 찬양", "핑거스타일 찬양", "새벽기도 음악" 같은 이 채널 특화 키워드를 반드시 포함하세요.
 - tags_en: 작곡가 이름 등 학술적 용어 말고 YouTube 실제 검색어로 작성하세요.
-- click_title: 반드시 아래 형식으로만 작성하세요:
-  형식: "[상황 키워드]에 [동사] [악기] [찬양|편곡]"
-  [상황 키워드] — 이 곡의 분위기·주제에 가장 어울리는 것 하나 선택:
-    새벽기도 / 기도 시간 / 묵상할 때 / 잠들기 전 / 예배 전 / 혼자 기도할 때
-    말씀 묵상 중 / 마음이 힘들 때 / 새벽 예배 / 수면 전 / 잠 못 이루는 밤
-    예배 준비 / 조용한 새벽 / 기도 응답을 기다리며 / 주일 아침
-  [동사] — 어울리는 / 듣기 좋은 / 틀어두기 좋은 (셋 중 하나)
-  [악기] — 편곡 스타일(${style})에 맞게: ${instrumentWord}
-  올바른 예: "새벽기도에 어울리는 ${instrumentWord} 찬양" / "마음이 힘들 때 듣기 좋은 ${instrumentWord} 편곡" / "잠들기 전 틀어두기 좋은 ${instrumentWord} 찬양"
-  금지: 위 형식 외의 모든 표현 — 감탄형, 의문형, 비교형, 수식어형 전부 불가
+- click_title: 위에 제시된 값을 그대로 사용하세요. 변경 금지.
 - 이 곡이 실존하는지 웹 검색으로 확인하세요. 불확실하면 {"error": "'${title}'에 대한 확인된 정보를 찾을 수 없습니다."} 형태로 응답하세요.`;
 
   document.getElementById('ai-g-prompt-text').textContent = prompt;
@@ -1083,7 +1166,6 @@ function applyGospelAI() {
   form.dataset.aiTagsKr = JSON.stringify(data.tags_kr || []);
   form.dataset.aiTagsEn = JSON.stringify(data.tags_en || []);
   form.dataset.aiSearchHook = data.search_hook || '';
-  form.dataset.aiClickTitle = data.click_title || '';
   form.dataset.aiTimestamps = JSON.stringify(data.timestamps || []);
   form.dataset.aiPinned = data.pinned_comment || '';
 
@@ -1210,11 +1292,15 @@ function generateShortsPrompt() {
   const title = document.getElementById('ai-s-title').value.trim();
   if (!title) { alert('곡 제목을 입력해주세요.'); return; }
 
+  const mood = document.getElementById('ai-s-mood').value;
+  const situation = document.getElementById('ai-s-situation').value;
   const isHymn = num ? true : false;
   const songDesc = isHymn ? `한국 새찬송가 ${num}장 "${title}"` : `"${title}"`;
 
   const prompt = `당신은 한국 기독교 찬송가/복음성가 전문가이자 YouTube SEO 전문가입니다.
 채널: ALL THAT HYMN — 찬송가·복음성가를 어쿠스틱 기타·피아노로 편곡하는 채널
+곡 분위기: ${mood}
+추천 청취 상황: ${situation}
 작업: ${songDesc}의 YouTube Shorts 업로드용 메타데이터를 아래 JSON 형식으로 작성해주세요.
 
 ⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
@@ -1227,7 +1313,7 @@ function generateShortsPrompt() {
   "tags_kr": ["이 곡을 YouTube에서 찾을 때 실제로 검색할 한국어 키워드 5개"],
   "tags_en": ["이 곡을 YouTube에서 찾을 때 실제로 검색할 영어 키워드 3개. 작곡가 이름 말고 acoustic hymn / worship shorts 같은 실사용 검색어"],
   "short_desc": "숏츠 설명 1-2문장. 이 곡이 어떤 곡인지, 어떤 상황에서 듣기 좋은지 자연스럽게 (해시태그 아닌 일반 문장으로)",
-  "click_title": "아래 [선택 후보] 중 이 곡 분위기에 맞는 것 하나를 그대로 복사. 절대 새로 만들지 말 것."
+  "click_title": "${situation}에 어울리는 어쿠스틱 찬양"
 }
 
 규칙:
@@ -1235,16 +1321,7 @@ function generateShortsPrompt() {
 - english_title: 확인된 영어 원제만. 번역 금지.
 - season: 불확실하면 "없음"
 - tags_en: 작곡가 이름 등 학술 용어 말고 YouTube 실제 검색어로.
-- click_title: 반드시 아래 형식으로만 작성하세요:
-  형식: "[상황 키워드]에 [동사] [악기] [찬양|편곡|찬송가]"
-  [상황 키워드] — 이 곡의 분위기·주제에 가장 어울리는 것 하나 선택:
-    새벽기도 / 기도 시간 / 묵상할 때 / 잠들기 전 / 예배 전 / 혼자 기도할 때
-    말씀 묵상 중 / 마음이 힘들 때 / 새벽 예배 / 수면 전 / 잠 못 이루는 밤
-    예배 준비 / 조용한 새벽 / 기도 응답을 기다리며 / 주일 아침
-  [동사] — 어울리는 / 듣기 좋은 / 틀어두기 좋은 (셋 중 하나)
-  [악기] — 이 곡 편곡 스타일에 맞는 악기명 (통기타 / 피아노 / 어쿠스틱 등)
-  올바른 예: "새벽기도에 어울리는 통기타 찬송가" / "마음이 힘들 때 듣기 좋은 피아노 찬양" / "잠들기 전 틀어두기 좋은 어쿠스틱 편곡"
-  금지: 위 형식 외의 모든 표현 — 감탄형, 의문형, 비교형, 수식어형 전부 불가
+- click_title: 위에 제시된 값을 그대로 사용하세요. 변경 금지.
 - 실존 확인 불가시 {"error": "확인된 정보를 찾을 수 없습니다."} 형태로 응답.`;
 
   document.getElementById('ai-s-prompt-text').textContent = prompt;
@@ -1294,7 +1371,6 @@ function applyShortsAI() {
   form.dataset.aiTagsKr = JSON.stringify(data.tags_kr || []);
   form.dataset.aiTagsEn = JSON.stringify(data.tags_en || []);
   form.dataset.aiShortDesc = data.short_desc || '';
-  form.dataset.aiClickTitle = data.click_title || '';
 
   errorEl.style.display = 'none';
   showToast();
@@ -1322,14 +1398,26 @@ function generateHymn() {
   const aiTagsKr = JSON.parse(form.dataset.aiTagsKr || '[]');
   const aiTagsEn = JSON.parse(form.dataset.aiTagsEn || '[]');
   const aiSearchHook = form.dataset.aiSearchHook || '';
-  const aiClickTitle = form.dataset.aiClickTitle || '';
   const aiPinned = form.dataset.aiPinned || '';
+
+  // Generate click_title from dropdowns (not LLM)
+  const situation = document.getElementById('ai-situation').value;
+  const instrumentWord = style === '어쿠스틱 피아노' ? '피아노'
+    : style === '아카펠라' ? '아카펠라'
+    : style === '기타+피아노' ? '어쿠스틱'
+    : '통기타';
+  const sleepSit = ['잠들기 전', '조용한 저녁'];
+  const hardSit = ['마음이 힘들 때', '위로가 필요할 때'];
+  const verb = sleepSit.includes(situation) ? '틀어두기 좋은'
+    : hardSit.includes(situation) ? '듣기 좋은'
+    : '어울리는';
+  const clickTitle = `${situation}에 ${verb} ${instrumentWord} 찬양`;
 
   if (!num || !kr) { alert('찬송가 번호와 제목을 입력해주세요.'); return; }
 
   // === TITLE (클릭 유도 부제 포함) ===
   let title = `찬송가 ${num}장 ${kr}`;
-  if (aiClickTitle) title += ` | ${aiClickTitle}`;
+  if (clickTitle) title += ` | ${clickTitle}`;
   if (en) title += ` - ${en}`;
   if (lyrics) title += ' (가사포함)';
 
@@ -1345,11 +1433,7 @@ function generateHymn() {
   // === DESCRIPTION (첫 2줄에 검색 의도 + 클릭 유도) ===
   let hookLine = aiSearchHook || `찬송가 편곡, 예배 음악, ${usage ? usage + '에 좋은 ' : ''}찬양`;
   let desc = `${hookLine} | 찬송가 ${num}장 "${kr}" ${style} 편곡 - ALL THAT HYMN\n`;
-  if (aiClickTitle) {
-    desc += `${aiClickTitle}을 들어보세요.`;
-  } else {
-    desc += `찬송가 편곡, 예배 음악을 들어보세요.`;
-  }
+  desc += `${clickTitle}을 들어보세요.`;
   if (intro) desc += `\n\n${intro}`;
   if (lyrics) desc += `\n\n[가사]\n${lyrics}`;
   desc += `\n\n더 많은 찬송가 편곡 듣기:\n`;
@@ -1413,14 +1497,26 @@ function generateGospel() {
   const aiTagsKr = JSON.parse(form.dataset.aiTagsKr || '[]');
   const aiTagsEn = JSON.parse(form.dataset.aiTagsEn || '[]');
   const aiSearchHook = form.dataset.aiSearchHook || '';
-  const aiClickTitle = form.dataset.aiClickTitle || '';
   const aiPinned = form.dataset.aiPinned || '';
+
+  // Generate click_title from dropdowns (not LLM)
+  const situation = document.getElementById('ai-g-situation').value;
+  const instrumentWordG = style === '어쿠스틱 피아노' ? '피아노'
+    : style === '아카펠라' ? '아카펠라'
+    : style === '기타+피아노' ? '어쿠스틱'
+    : '통기타';
+  const sleepSitG = ['잠들기 전', '조용한 저녁'];
+  const hardSitG = ['마음이 힘들 때', '위로가 필요할 때'];
+  const verbG = sleepSitG.includes(situation) ? '틀어두기 좋은'
+    : hardSitG.includes(situation) ? '듣기 좋은'
+    : '어울리는';
+  const clickTitle = `${situation}에 ${verbG} ${instrumentWordG} 찬양`;
 
   if (!kr) { alert('곡 제목을 입력해주세요.'); return; }
 
   // === TITLE (클릭 유도 부제 포함) ===
   let title = `${kr}`;
-  if (aiClickTitle) title += ` | ${aiClickTitle}`;
+  if (clickTitle) title += ` | ${clickTitle}`;
   title += ` - ${category} ${style} 편곡`;
   if (en) title += ` - ${en}`;
   if (lyrics) title += ' (가사포함)';
@@ -1431,11 +1527,7 @@ function generateGospel() {
   // === DESCRIPTION ===
   let hookLine = aiSearchHook || `${category}, 찬양, 예배 음악`;
   let desc = `${hookLine} | "${kr}" ${style} 편곡 - ALL THAT HYMN\n`;
-  if (aiClickTitle) {
-    desc += `${aiClickTitle}을 들어보세요.`;
-  } else {
-    desc += `${category} 편곡을 들어보세요.`;
-  }
+  desc += `${clickTitle}을 들어보세요.`;
   if (intro) desc += `\n\n${intro}`;
   if (lyrics) desc += `\n\n[가사]\n${lyrics}`;
   desc += `\n\n더 많은 찬양 듣기:\n`;
@@ -1570,7 +1662,6 @@ function generateShorts() {
   const aiTagsKr = JSON.parse(form.dataset.aiTagsKr || '[]');
   const aiTagsEn = JSON.parse(form.dataset.aiTagsEn || '[]');
   const aiShortDesc = form.dataset.aiShortDesc || '';
-  const aiClickTitle = form.dataset.aiClickTitle || '';
 
   if (!title_kr) { alert('곡 제목을 입력해주세요.'); return; }
 
@@ -1581,7 +1672,6 @@ function generateShorts() {
 
   if (type === '찬송가' && num) {
     shortsTitle = `찬송가 ${num}장 ${title_kr}`;
-    if (aiClickTitle) shortsTitle += ` | ${aiClickTitle}`;
     if (title_en) shortsTitle += ` - ${title_en}`;
     if (season) {
       shortsTitle += ` #Shorts #찬송가 #${season}`;
@@ -1599,7 +1689,6 @@ function generateShorts() {
 
   } else if (type === '복음성가') {
     shortsTitle = `${title_kr}`;
-    if (aiClickTitle) shortsTitle += ` | ${aiClickTitle}`;
     shortsTitle += ` #Shorts #복음성가 #찬양`;
 
     tagList = [title_kr, '복음성가', '찬양', 'worship', 'ALL THAT HYMN',
