@@ -260,7 +260,9 @@
         <div class="form-group">
           <label>편곡 스타일</label>
           <select id="h-style">
-            <option value="어쿠스틱">어쿠스틱 (기타/피아노+보컬)</option>
+            <option value="어쿠스틱 기타">어쿠스틱 기타</option>
+            <option value="어쿠스틱 피아노">어쿠스틱 피아노</option>
+            <option value="기타+피아노">기타+피아노</option>
             <option value="아카펠라">아카펠라</option>
           </select>
         </div>
@@ -374,7 +376,9 @@
         <div class="form-group">
           <label>편곡 스타일</label>
           <select id="g-style">
-            <option value="어쿠스틱">어쿠스틱</option>
+            <option value="어쿠스틱 기타">어쿠스틱 기타</option>
+            <option value="어쿠스틱 피아노">어쿠스틱 피아노</option>
+            <option value="기타+피아노">기타+피아노</option>
             <option value="아카펠라">아카펠라</option>
           </select>
         </div>
@@ -776,14 +780,36 @@ function seasonTagsEn(seasons) {
 function generatePrompt() {
   const num = document.getElementById('ai-num').value.trim();
   const title = document.getElementById('ai-title').value.trim();
+  const style = document.getElementById('h-style').value;
 
   if (!num || !title) {
     alert('찬송가 번호와 제목을 입력해주세요.');
     return;
   }
 
+  const instrumentWord = style === '어쿠스틱 피아노' ? '피아노'
+    : style === '아카펠라' ? '아카펠라'
+    : style === '기타+피아노' ? '어쿠스틱'
+    : '기타';
+  const styleTagHint = style === '어쿠스틱 피아노' ? '피아노 찬송가/피아노 찬양/어쿠스틱 피아노'
+    : style === '아카펠라' ? '아카펠라 찬양/화음 찬양/찬송가 아카펠라'
+    : style === '기타+피아노' ? '통기타 찬송가/피아노 찬양/어쿠스틱 찬양'
+    : '통기타 찬송가/핑거스타일 찬양/어쿠스틱 기타 찬양';
+  const clickExamples = style === '어쿠스틱 피아노'
+    ? `    예) "기도할 때 꼭 틀게 되는 피아노 편곡" / "새벽기도를 위한 잔잔한 피아노 찬양"
+    예) "잠들기 전 혼자 듣기 좋은 피아노 찬양" / "마음이 힘들 때 위로받는 피아노"`
+    : style === '아카펠라'
+    ? `    예) "기도할 때 꼭 틀게 되는 아카펠라 찬양" / "화음으로 드리는 새벽기도 찬양"
+    예) "잠들기 전 혼자 듣기 좋은 아카펠라" / "마음이 힘들 때 위로받는 화음 찬양"`
+    : style === '기타+피아노'
+    ? `    예) "기도할 때 꼭 틀게 되는 어쿠스틱 편곡" / "새벽기도를 위한 기타와 피아노"
+    예) "잠들기 전 혼자 듣기 좋은 어쿠스틱" / "마음이 힘들 때 위로받는 어쿠스틱"`
+    : `    예) "기도할 때 꼭 틀게 되는 기타 편곡" / "새벽기도를 위한 잔잔한 어쿠스틱"
+    예) "잠들기 전 혼자 듣기 좋은 기타 찬양" / "마음이 힘들 때 위로받는 통기타"`;
+
   const prompt = `당신은 한국 개신교 찬송가 전문가이자 YouTube SEO 전문가입니다.
 채널: ALL THAT HYMN — 새찬송가를 어쿠스틱 기타·피아노로 편곡하는 채널
+이번 편곡 스타일: ${style}
 작업: 새찬송가(2006년 개편) ${num}장 "${title}"의 YouTube 업로드용 메타데이터를 아래 JSON 형식으로 작성해주세요.
 
 ⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
@@ -802,8 +828,8 @@ function generatePrompt() {
   "lyrics": "한국어 가사 전체 (반드시 hymnkorea.org 공식 가사만. 확인 불가시 빈 문자열)",
   "seasons": ["관련 절기. 가능한 값: 사순절, 고난주간, 부활절, 성탄절, 추수감사절, 종려주일, 신년. 해당 없으면 []"],
   "usage": "가장 적합한 용도 하나. 가능한 값: 묵상, 기도, 예배, 수면, 없음",
-  "tags_kr": ["이 찬송가를 YouTube에서 검색할 때 실제로 입력할 한국어 키워드 10개. 포함 권장: 찬송가 번호·제목, 어쿠스틱 편곡 스타일(통기타 찬송가/핑거스타일 찬양/어쿠스틱 찬양), 청취 상황(새벽기도/기도할 때/수면/묵상), 감성(잔잔한/은혜로운) 등 조합"],
-  "tags_en": ["이 찬송가를 YouTube에서 찾을 때 실제로 검색할 영어 키워드 5개. acoustic hymn / fingerstyle hymn / worship music / Korean hymn / prayer music 같은 실사용 검색어 위주. 작곡가 이름·악보명 금지"],
+  "tags_kr": ["이 찬송가를 YouTube에서 검색할 때 실제로 입력할 한국어 키워드 10개. 포함 권장: 찬송가 번호·제목, 편곡 스타일(${styleTagHint}), 청취 상황(새벽기도/기도할 때/수면/묵상), 감성(잔잔한/은혜로운) 등 조합"],
+  "tags_en": ["이 찬송가를 YouTube에서 찾을 때 실제로 검색할 영어 키워드 5개. ${style === '어쿠스틱 피아노' ? 'piano hymn / piano worship / acoustic piano / Korean hymn / prayer music' : style === '아카펠라' ? 'acapella hymn / acapella worship / Korean hymn / choral hymn / worship music' : style === '기타+피아노' ? 'acoustic hymn / guitar piano worship / Korean hymn / fingerstyle hymn / prayer music' : 'fingerstyle hymn / acoustic guitar hymn / Korean hymn / acoustic hymn / prayer music'} 같은 실사용 검색어 위주. 작곡가 이름·악보명 금지"],
   "search_hook": "YouTube 설명 첫 줄에 쓸 검색 유입 문장. 청취 상황(기도/새벽기도/묵상/수면)과 어쿠스틱 편곡 스타일을 조합해서 자연스럽게 작성 (예: '새벽기도 전 기타로 듣는 잔잔한 찬송가', '기도할 때 흘려듣기 좋은 어쿠스틱 찬양')",
   "click_title": "제목에 붙을 클릭 유도 부제. 20자 이내. 아래 규칙 참고.",
   "pinned_comment": "YouTube 고정댓글용 감성 문구 1-2문장. 이 찬송가의 핵심 메시지로 공감을 이끌어내는 문장"
@@ -821,11 +847,11 @@ function generatePrompt() {
   금지: ① 찬송가 제목·가사 그대로 인용 ② "따뜻한", "경건한", "아름다운"만 있는 막연한 수식어 문장
   최강 전략 - 상황 매칭형 (데이터 기반 CTR 최강):
     청취자가 "지금 내 상황에 딱 맞는 음악이다"라고 즉각 느끼게 하는 표현
-    예) "기도할 때 꼭 틀게 되는 기타 편곡" / "새벽기도를 위한 잔잔한 어쿠스틱"
-    예) "잠들기 전 혼자 듣기 좋은 기타 찬양" / "마음이 힘들 때 위로받는 어쿠스틱"
-    예) "묵상할 때 흘려듣기 좋은 통기타 찬양" / "예배 전 마음을 여는 어쿠스틱 기타"
+    편곡 스타일(${style})에 맞는 악기 이름을 사용하세요.
+${clickExamples}
+    예) "묵상할 때 흘려듣기 좋은 ${instrumentWord} 찬양" / "예배 전 마음을 여는 ${instrumentWord} 편곡"
   보조 전략 - 감정 공감형:
-    예) "이 찬송 들으면 기도하고 싶어진다" / "혼자 듣기 너무 아까운 기타 편곡"
+    예) "이 찬송 들으면 기도하고 싶어진다" / "혼자 듣기 너무 아까운 ${instrumentWord} 편곡"
   이 찬송가의 분위기(잔잔한/웅장한/기쁜)에 맞는 상황을 골라 작성하세요.
 - 새찬송가 ${num}장이 "${title}"이 맞는지 확인하세요. 불일치시 {"error": "찬송가 ${num}장의 제목이 '${title}'과 일치하지 않습니다."} 형태로 응답하세요.`;
 
@@ -949,8 +975,30 @@ function generateGospelPrompt() {
   const title = document.getElementById('ai-g-title').value.trim();
   if (!title) { alert('곡 제목을 입력해주세요.'); return; }
 
+  const style = document.getElementById('g-style').value;
+  const instrumentWord = style === '어쿠스틱 피아노' ? '피아노'
+    : style === '아카펠라' ? '아카펠라'
+    : style === '기타+피아노' ? '어쿠스틱'
+    : '기타';
+  const styleTagHint = style === '어쿠스틱 피아노' ? '피아노 찬양/피아노 CCM/어쿠스틱 피아노'
+    : style === '아카펠라' ? '아카펠라 찬양/화음 찬양/아카펠라 CCM'
+    : style === '기타+피아노' ? '통기타 찬양/피아노 찬양/어쿠스틱 찬양'
+    : '통기타 찬양/핑거스타일 찬양/어쿠스틱 기타 찬양';
+  const clickExamples = style === '어쿠스틱 피아노'
+    ? `    예) "기도할 때 꼭 틀게 되는 피아노 편곡" / "새벽기도를 위한 잔잔한 피아노 찬양"
+    예) "잠들기 전 혼자 듣기 좋은 피아노 찬양" / "마음이 힘들 때 위로받는 피아노"`
+    : style === '아카펠라'
+    ? `    예) "기도할 때 꼭 틀게 되는 아카펠라 찬양" / "화음으로 드리는 새벽기도 찬양"
+    예) "잠들기 전 혼자 듣기 좋은 아카펠라" / "마음이 힘들 때 위로받는 화음 찬양"`
+    : style === '기타+피아노'
+    ? `    예) "기도할 때 꼭 틀게 되는 어쿠스틱 편곡" / "새벽기도를 위한 기타와 피아노"
+    예) "잠들기 전 혼자 듣기 좋은 어쿠스틱" / "마음이 힘들 때 위로받는 어쿠스틱"`
+    : `    예) "기도할 때 꼭 틀게 되는 기타 편곡" / "새벽기도를 위한 잔잔한 어쿠스틱"
+    예) "잠들기 전 혼자 듣기 좋은 기타 찬양" / "마음이 힘들 때 위로받는 통기타"`;
+
   const prompt = `당신은 한국 기독교 음악(복음성가/CCM) 전문가이자 YouTube SEO 전문가입니다.
 채널: ALL THAT HYMN — 복음성가·CCM을 어쿠스틱 기타·피아노로 편곡하는 채널
+이번 편곡 스타일: ${style}
 작업: "${title}"의 YouTube 업로드용 메타데이터를 아래 JSON 형식으로 작성해주세요.
 
 ⚠️ 핵심 원칙: 확실하지 않은 정보는 절대 지어내지 마세요.
@@ -968,8 +1016,8 @@ function generateGospelPrompt() {
   "category": "카테고리. 가능한 값: 복음성가, CCM, 찬양, 축복송 (하나만 선택)",
   "intro": "작곡/작사 배경 1-2문장 (검증된 정보만. 불확실하면 빈 문자열)",
   "lyrics": "한국어 가사 전체 (검증된 원본 가사만. 확인 불가시 빈 문자열)",
-  "tags_kr": ["이 곡을 YouTube에서 검색할 때 실제로 입력할 한국어 키워드 10개. 포함 권장: 곡 제목, 어쿠스틱 편곡 스타일(통기타 찬양/핑거스타일 찬양/어쿠스틱 CCM), 청취 상황(새벽기도/기도할 때/수면/묵상), 감성(잔잔한/은혜로운) 등 조합"],
-  "tags_en": ["이 곡을 YouTube에서 찾을 때 실제로 검색할 영어 키워드 5개. acoustic worship / Korean CCM / gospel music / fingerstyle worship / prayer music 같은 실사용 검색어 위주. 작곡가 이름 금지"],
+  "tags_kr": ["이 곡을 YouTube에서 검색할 때 실제로 입력할 한국어 키워드 10개. 포함 권장: 곡 제목, 편곡 스타일(${styleTagHint}), 청취 상황(새벽기도/기도할 때/수면/묵상), 감성(잔잔한/은혜로운) 등 조합"],
+  "tags_en": ["이 곡을 YouTube에서 찾을 때 실제로 검색할 영어 키워드 5개. ${style === '어쿠스틱 피아노' ? 'piano worship / acoustic piano CCM / Korean gospel / prayer music / piano cover' : style === '아카펠라' ? 'acapella worship / acapella CCM / Korean gospel / choral worship / acapella cover' : style === '기타+피아노' ? 'acoustic worship / guitar piano CCM / Korean gospel / fingerstyle worship / prayer music' : 'acoustic guitar worship / fingerstyle CCM / Korean gospel / acoustic worship / prayer music'} 같은 실사용 검색어 위주. 작곡가 이름 금지"],
   "search_hook": "YouTube 설명 첫 줄에 쓸 검색 유입 문장. 청취 상황(기도/새벽기도/묵상/수면)과 어쿠스틱 편곡 스타일을 조합해서 자연스럽게 작성 (예: '기도할 때 흘려듣기 좋은 어쿠스틱 찬양', '새벽기도 전 마음을 여는 잔잔한 CCM')",
   "click_title": "제목에 붙을 클릭 유도 부제. 20자 이내. 아래 규칙 참고.",
   "pinned_comment": "YouTube 고정댓글용 감성 문구 1-2문장. 곡의 핵심 메시지를 담아 공감을 이끌어내는 문장"
@@ -987,11 +1035,11 @@ function generateGospelPrompt() {
   금지: ① 곡 제목·가사 그대로 인용 ② "따뜻한", "은혜로운", "아름다운"만 있는 막연한 수식어 문장
   최강 전략 - 상황 매칭형 (데이터 기반 CTR 최강):
     청취자가 "지금 내 상황에 딱 맞는 음악이다"라고 즉각 느끼게 하는 표현
-    예) "기도할 때 꼭 틀게 되는 어쿠스틱 CCM" / "새벽기도를 위한 잔잔한 기타 찬양"
-    예) "잠들기 전 혼자 듣기 좋은 어쿠스틱" / "마음이 힘들 때 위로받는 기타 찬양"
-    예) "묵상할 때 흘려듣기 좋은 통기타 찬양" / "예배 전 마음을 여는 어쿠스틱 기타"
+    편곡 스타일(${style})에 맞는 악기 이름을 사용하세요.
+${clickExamples}
+    예) "묵상할 때 흘려듣기 좋은 ${instrumentWord} 찬양" / "예배 전 마음을 여는 ${instrumentWord} 편곡"
   보조 전략 - 감정 공감형:
-    예) "이 찬양 들으면 기도하고 싶어진다" / "혼자 듣기 너무 아까운 기타 편곡"
+    예) "이 찬양 들으면 기도하고 싶어진다" / "혼자 듣기 너무 아까운 ${instrumentWord} 편곡"
   이 곡의 분위기(잔잔한/웅장한/기쁜)에 맞는 상황을 골라 작성하세요.
 - 이 곡이 실존하는지 웹 검색으로 확인하세요. 불확실하면 {"error": "'${title}'에 대한 확인된 정보를 찾을 수 없습니다."} 형태로 응답하세요.`;
 
@@ -1320,13 +1368,20 @@ function generateHymn() {
   if (seasons.length > 0) descHashtags.push(`#${seasons[0]}`);
   desc += descHashtags.slice(0, 5).join(' ');
 
-  // === TAGS (10~15개: 고정 + AI 생성) ===
+  // === TAGS (10~15개: 고정 + 스타일별 + AI 생성) ===
+  const styleTagsKr = style === '어쿠스틱 피아노' ? ['피아노 찬송가', '피아노 찬양', '어쿠스틱 피아노']
+    : style === '아카펠라' ? ['아카펠라 찬양', '찬송가 아카펠라', '화음 찬양']
+    : style === '기타+피아노' ? ['통기타 찬송가', '피아노 찬양', '어쿠스틱 찬양']
+    : ['통기타 찬송가', '핑거스타일 찬양', '어쿠스틱 기타 찬양'];
+  const styleTagsEn = style === '어쿠스틱 피아노' ? ['piano hymn', 'piano worship']
+    : style === '아카펠라' ? ['acapella hymn', 'acapella worship']
+    : style === '기타+피아노' ? ['acoustic hymn', 'guitar piano worship']
+    : ['fingerstyle hymn', 'acoustic guitar hymn'];
   let tagList = [
-    `찬송가 ${num}장`, kr, '통기타 찬송가', '찬송가 편곡', '어쿠스틱 찬양',
-    'acoustic hymn', 'fingerstyle hymn', 'worship music', 'ALL THAT HYMN',
+    `찬송가 ${num}장`, kr, '찬송가 편곡', '예배 음악',
+    ...styleTagsKr, ...styleTagsEn, 'worship music', 'ALL THAT HYMN',
   ];
   if (en) tagList.splice(2, 0, en);
-  if (style === '아카펠라') tagList.push('아카펠라 찬양');
   if (seasons.length > 0) tagList.push(seasons[0]);
   tagList.push(...aiTagsKr, ...aiTagsEn);
   let tags = [...new Set(tagList)].slice(0, 15).join(', ');
@@ -1397,7 +1452,15 @@ function generateGospel() {
   desc += descHash.slice(0, 5).join(' ');
 
   // === TAGS (10~15개) ===
-  let tagList = [kr, category, '통기타 찬양', '어쿠스틱 찬양', '핑거스타일 찬양', 'acoustic worship', 'Korean CCM', 'worship music', 'ALL THAT HYMN'];
+  const styleTagsKr = style === '어쿠스틱 피아노' ? ['피아노 찬양', '피아노 CCM', '어쿠스틱 피아노']
+    : style === '아카펠라' ? ['아카펠라 찬양', '화음 찬양', '아카펠라 CCM']
+    : style === '기타+피아노' ? ['통기타 찬양', '피아노 찬양', '어쿠스틱 찬양']
+    : ['통기타 찬양', '핑거스타일 찬양', '어쿠스틱 기타 찬양'];
+  const styleTagsEn = style === '어쿠스틱 피아노' ? ['piano worship', 'acoustic piano CCM']
+    : style === '아카펠라' ? ['acapella worship', 'acapella CCM']
+    : style === '기타+피아노' ? ['acoustic worship', 'guitar piano worship']
+    : ['acoustic guitar worship', 'fingerstyle CCM'];
+  let tagList = [kr, category, '예배 음악', ...styleTagsKr, ...styleTagsEn, 'Korean CCM', 'worship music', 'ALL THAT HYMN'];
   if (en) tagList.splice(1, 0, en);
   tagList.push(...aiTagsKr, ...aiTagsEn);
   let tags = [...new Set(tagList)].slice(0, 15).join(', ');
