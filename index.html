@@ -235,11 +235,15 @@
             <option value="결단">결단 / 의지적인</option>
             <option value="감사">감사 / 찬미</option>
             <option value="위로">위로 / 치유</option>
+            <option value="경건한">경건한 / 엄숙한</option>
+            <option value="소망">소망 / 기대</option>
+            <option value="찬양">찬양 / 경배</option>
           </select>
         </div>
         <div class="form-group">
           <label>청취 상황</label>
           <select id="ai-situation">
+            <option value="" selected>선택안함</option>
             <option value="새벽기도">새벽기도</option>
             <option value="예배 전">예배 전</option>
             <option value="묵상 / QT">묵상 / QT</option>
@@ -382,11 +386,15 @@
             <option value="결단">결단 / 의지적인</option>
             <option value="감사">감사 / 찬미</option>
             <option value="위로">위로 / 치유</option>
+            <option value="경건한">경건한 / 엄숙한</option>
+            <option value="소망">소망 / 기대</option>
+            <option value="찬양">찬양 / 경배</option>
           </select>
         </div>
         <div class="form-group">
           <label>청취 상황</label>
           <select id="ai-g-situation">
+            <option value="" selected>선택안함</option>
             <option value="새벽기도">새벽기도</option>
             <option value="예배 전">예배 전</option>
             <option value="묵상 / QT">묵상 / QT</option>
@@ -618,11 +626,15 @@
             <option value="결단">결단 / 의지적인</option>
             <option value="감사">감사 / 찬미</option>
             <option value="위로">위로 / 치유</option>
+            <option value="경건한">경건한 / 엄숙한</option>
+            <option value="소망">소망 / 기대</option>
+            <option value="찬양">찬양 / 경배</option>
           </select>
         </div>
         <div class="form-group">
           <label>청취 상황</label>
           <select id="ai-s-situation">
+            <option value="" selected>선택안함</option>
             <option value="새벽기도">새벽기도</option>
             <option value="예배 전">예배 전</option>
             <option value="묵상 / QT">묵상 / QT</option>
@@ -1411,7 +1423,7 @@ function generateHymn() {
   const verb = sleepSit.includes(situation) ? '틀어두기 좋은'
     : hardSit.includes(situation) ? '듣기 좋은'
     : '어울리는';
-  const clickTitle = `${situation}에 ${verb} ${instrumentWord} 찬양`;
+  const clickTitle = situation ? `${situation}에 ${verb} ${instrumentWord} 찬양` : '';
 
   if (!num || !kr) { alert('찬송가 번호와 제목을 입력해주세요.'); return; }
 
@@ -1433,7 +1445,7 @@ function generateHymn() {
   // === DESCRIPTION (첫 2줄에 검색 의도 + 클릭 유도) ===
   let hookLine = aiSearchHook || `찬송가 편곡, 예배 음악, ${usage ? usage + '에 좋은 ' : ''}찬양`;
   let desc = `${hookLine} | 찬송가 ${num}장 "${kr}" ${style} 편곡 - ALL THAT HYMN\n`;
-  desc += `${clickTitle}을 들어보세요.`;
+  if (clickTitle) desc += `${clickTitle}을 들어보세요.`;
   if (intro) desc += `\n\n${intro}`;
   if (lyrics) desc += `\n\n[가사]\n${lyrics}`;
   desc += `\n\n더 많은 찬송가 편곡 듣기:\n`;
@@ -1510,7 +1522,7 @@ function generateGospel() {
   const verbG = sleepSitG.includes(situation) ? '틀어두기 좋은'
     : hardSitG.includes(situation) ? '듣기 좋은'
     : '어울리는';
-  const clickTitle = `${situation}에 ${verbG} ${instrumentWordG} 찬양`;
+  const clickTitle = situation ? `${situation}에 ${verbG} ${instrumentWordG} 찬양` : '';
 
   if (!kr) { alert('곡 제목을 입력해주세요.'); return; }
 
@@ -1527,7 +1539,7 @@ function generateGospel() {
   // === DESCRIPTION ===
   let hookLine = aiSearchHook || `${category}, 찬양, 예배 음악`;
   let desc = `${hookLine} | "${kr}" ${style} 편곡 - ALL THAT HYMN\n`;
-  desc += `${clickTitle}을 들어보세요.`;
+  if (clickTitle) desc += `${clickTitle}을 들어보세요.`;
   if (intro) desc += `\n\n${intro}`;
   if (lyrics) desc += `\n\n[가사]\n${lyrics}`;
   desc += `\n\n더 많은 찬양 듣기:\n`;
